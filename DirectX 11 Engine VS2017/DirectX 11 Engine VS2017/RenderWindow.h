@@ -1,12 +1,16 @@
 #pragma once
 #include "ErrorLogger.h"
 
+
+
 class RenderWindow
 {
 public:
-	bool Initialize(HINSTANCE hInstance, std::string window_title, std::string window_class, int width, int height);
+	bool Initialize( HINSTANCE hInstance, std::string window_title, std::string window_class, int width, int height);
+	
 	bool ProcessMessages();
 	~RenderWindow();
+	HWND GetWindowHandle() { return handle; }
 private:
 	void RegisterWindowClass();
 	HWND handle = NULL;
