@@ -8,11 +8,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_ int       nCmdShow)
 {
 	Engine engine;
-	engine.Initialize(hInstance, "Test1", "First Window Class", 800, 600);
-	while (engine.ProcessMessages() == true)
+	if (engine.Initialize(hInstance, "Test1", "First Window Class", 800, 600))
 	{
-		engine.RenderFrame();
+		while (engine.ProcessMessages() == true)
+		{
+			engine.RenderFrame();
+		}
 	}
-
 	return 0;
 }
