@@ -159,15 +159,19 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AdapterReader.h" />
+    <ClInclude Include="ConstantBuffer.h" />
+    <ClInclude Include="ConstantBufferTypes.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="ErrorLogger.h" />
     <ClInclude Include="Graphics.h" />
+    <ClInclude Include="indexBuffer.h" />
     <ClInclude Include="KeyboardClass.h" />
     <ClInclude Include="KeyboardEvents.h" />
     <ClInclude Include="RenderWindow.h" />
     <ClInclude Include="Shaders.h" />
     <ClInclude Include="StringConverter.h" />
     <ClInclude Include="Vertex.h" />
+    <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="WindowContainer.h" />
   </ItemGroup>
   <ItemGroup>

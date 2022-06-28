@@ -35,14 +35,26 @@ void Graphics::RenderFrame()
 	this->deviceContext->VSSetShader(vertexShader.GetShader(), NULL, 0);
 	this->deviceContext->PSSetShader(pixelShader.GetShader(), NULL, 0);
 
-	UINT stride = sizeof(Vertex);
+
 	UINT offset = 0;
+
+	//Updata Constant Buffer
+	CB_VS_vertexshader data;
+	//offset
+	constantBuffer.data.xOffset = 0.0f;
+	constantBuffer.data.yOffset = 0.5f;
+	if (!constantBuffer.ApplyChanges())
+		return;
+	this->deviceContext->VSSetConstantBuffers(0, 1, constantBuffer.GetAddressOf());
+
 	//draw green
 
 	//draw red
 	this->deviceContext->PSSetShaderResources(0, 1, this->myTexture.GetAddressOf());//set to pixel shader
-	this->deviceContext->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), &stride, &offset);
-	this->deviceContext->Draw(6, 0);
+	this->deviceContext->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), vertexBuffer.StridePtr(), &offset);
+	this->deviceContext->IASetIndexBuffer(indicesBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+
+	this->deviceContext->DrawIndexed(indicesBuffer.BufferSize(), 0, 0);
 
 
 
@@ -243,70 +255,51 @@ bool Graphics::InitializeScene()
 	Vertex v[] =
 	{
 		// must be clockwise
-		Vertex(-1.0f, -1.0f,1.0f,	0.0f,1.0f),//left botAtom
-		Vertex(-1.0f,  1.0f, 1.0f,	0.0f,0.0f),//top middle
-		Vertex(1.0f, 1.0f,	1.0f,	1.0f,0.0f),//right middle
-		
-		Vertex(-1.0f, -1.0f,1.0f,	0.0f,1.0f),
-		Vertex(1.0f, 1.0f,	1.0f,	1.0f,0.0f),
-		Vertex(1.0f, -1.0f, 1.0f,	1.0f,1.0f)
+		Vertex(-1.0f, -1.0f,1.0f,	0.0f,1.0f),//left botAtom -[0]
+		Vertex(-1.0f,  1.0f, 1.0f,	0.0f,0.0f),//top middle		-[1]
+		Vertex(1.0f, 1.0f,	1.0f,	1.0f,0.0f),//right middle	-[2]
+		Vertex(1.0f, -1.0f, 1.0f,	1.0f,1.0f)					//-[3]
 		//right middle
 	};
-	D3D11_BUFFER_DESC vertexBufferDesc;
-	ZeroMemory(&vertexBufferDesc, sizeof(vertexBufferDesc));
+	DWORD indices[] =
+	{
+		0,1,2,
+		0,2,3
+	};
+	//Load Vertex Buffer
 
-	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	vertexBufferDesc.ByteWidth = sizeof(Vertex) * ARRAYSIZE(v);
-	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vertexBufferDesc.CPUAccessFlags = 0;
-	vertexBufferDesc.MiscFlags = 0;
 
-	D3D11_SUBRESOURCE_DATA vertexBufferData;
-	ZeroMemory(&vertexBufferData, sizeof(vertexBufferData));
-	vertexBufferData.pSysMem = v;
-
-	HRESULT hr = device->CreateBuffer(&vertexBufferDesc, &vertexBufferData, vertexBuffer.GetAddressOf());
+	HRESULT hr = this->vertexBuffer.Initialize(this->device.Get(), v, ARRAYSIZE(v));
 	if (FAILED(hr))
 	{
 		ErrorLogger::Log(hr, "Failed to create vertex buffer. ");
 		return false;
 	}
-	//read texture from file
+	//Load Index buffer
+	hr = this->indicesBuffer.Initialize(this->device.Get(), indices, ARRAYSIZE(indices));
+	if (FAILED(hr))
+	{
+		ErrorLogger::Log(hr, "Failed to create indices buffer ");
+		return false;
+	}
+
+	//Load texture from file
 	hr = DirectX::CreateWICTextureFromFile(device.Get(), L"..\\DirectX 11 Engine VS2017\\Texture\\OIP-C.jpg", NULL, myTexture.GetAddressOf());
 	if (FAILED(hr))
 	{
 		ErrorLogger::Log(hr, "Failed to create wic texture from file. ");
 		return false;
 	}
-	//Green
-	/*
-	//Vertex
-	Vertex v2[] =
-	{
-		// must be clockwise
-		Vertex(-0.25f,  -0.25f,0.0f, 	0.0f,1.0f,0.0f),//left bottom
-		Vertex( 0.0f,   0.25f, 0.0f, 	0.0f,1.0f,0.0f),//top middle
-		Vertex( 0.25f,  -0.25f, 0.0f,	0.0f,1.0f,0.0f)//right middle
-		//Vertex(1.0f, 0.1f)
-	};
-	
-	ZeroMemory(&vertexBufferDesc, sizeof(vertexBufferDesc));
 
-	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	vertexBufferDesc.ByteWidth = sizeof(Vertex) * ARRAYSIZE(v2);
-	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vertexBufferDesc.CPUAccessFlags = 0;
-	vertexBufferDesc.MiscFlags = 0;
+	//Load constant buffer
 
-	
-	ZeroMemory(&vertexBufferData, sizeof(vertexBufferData));
-	vertexBufferData.pSysMem = v2;
-
-	hr = device->CreateBuffer(&vertexBufferDesc, &vertexBufferData, vertexBuffer2.GetAddressOf());
+	hr = this->constantBuffer.Initialize(this->device.Get(), this->deviceContext.Get());
 	if (FAILED(hr))
 	{
-		ErrorLogger::Log(hr, "Failed to create vertex buffer. ");
+		ErrorLogger::Log(hr, "Failed to create constant buffer. ");
 		return false;
-	}*/
+	}
+	//Green
+
 	return true;
 }

@@ -5,6 +5,9 @@
 #include "Shaders.h"
 #include "Vertex.h"
 #include <WICTextureLoader.h>
+#include "VertexBuffer.h"
+#include "indexBuffer.h"
+#include "ConstantBuffer.h"
 class Graphics
 {
 public :
@@ -24,10 +27,11 @@ private:
 	
 	VertexShader vertexShader;
 	PixelShader pixelShader;
+	ConstantBuffer<CB_VS_vertexshader> constantBuffer;
+
 	
-
-	Microsoft::WRL::ComPtr<ID3D11Buffer> vertexBuffer;
-
+	VertexBuffer<Vertex> vertexBuffer;
+	IndexBuffer indicesBuffer;
 
 
 	Microsoft::WRL::ComPtr <ID3D11InputLayout> inputLayout;
