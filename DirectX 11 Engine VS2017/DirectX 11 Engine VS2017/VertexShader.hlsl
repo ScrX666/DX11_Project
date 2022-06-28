@@ -1,19 +1,19 @@
 struct VS_Input
 {
     float3 inPos : POSITION;
-    float3 InColor : COLOR;
+    float2 inTexCoord : TEXCOORD0;
 };
 struct VS_Output
 {
     float4 outPosition : SV_POSITION;
-    float3 outColor : COLOR;
+    float2 outTexCoord : TEXCOORD0;
 };
 
 VS_Output main(VS_Input input)
 {
     VS_Output output;
     output.outPosition = float4(input.inPos, 1.0f);
-    output.outColor = input.InColor;
+    output.outTexCoord = input.inTexCoord;
    
     return output;
 }

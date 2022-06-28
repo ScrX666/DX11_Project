@@ -30,7 +30,7 @@ void Graphics::RenderFrame()
 	this->deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	this->deviceContext->RSSetState(rasterizerState.Get());
 	this->deviceContext->OMSetDepthStencilState(depthStencilState.Get(), 0);
-
+	this->deviceContext->PSSetSamplers(0, 1, this->samplerState.GetAddressOf());
 
 	this->deviceContext->VSSetShader(vertexShader.GetShader(), NULL, 0);
 	this->deviceContext->PSSetShader(pixelShader.GetShader(), NULL, 0);
@@ -38,11 +38,13 @@ void Graphics::RenderFrame()
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 	//draw green
-	this->deviceContext->IASetVertexBuffers(0, 1, vertexBuffer2.GetAddressOf(), &stride, &offset);
-	this->deviceContext->Draw(3, 0);
+
 	//draw red
+	this->deviceContext->PSSetShaderResources(0, 1, this->myTexture.GetAddressOf());//set to pixel shader
 	this->deviceContext->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), &stride, &offset);
-	this->deviceContext->Draw(3, 0);
+	this->deviceContext->Draw(6, 0);
+
+
 
 
 	this->swapChain->Present(1, NULL);
@@ -183,8 +185,30 @@ bool Graphics::InitializeDirectX(HWND hwnd, int width, int height)
 		ErrorLogger::Log(hr, "Failed to create rasterizer state.");
 		return false;
 	}
+
+	//create sampler description for sampler state
+	D3D11_SAMPLER_DESC samplerDesc;
+	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	samplerDesc.MinLOD = 0;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	hr = device->CreateSamplerState(&samplerDesc, samplerState.GetAddressOf());
+	if (FAILED(hr))
+	{
+		ErrorLogger::Log(hr, "Failed to create sampler state.");
+		return false;
+	}
+
+
 	return true;
 }
+
+
+
 
 bool Graphics::InitializeShader()
 {
@@ -199,7 +223,7 @@ bool Graphics::InitializeShader()
 
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{ "POSITION", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0 ,
-	"COLOR", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0};
+	"TEXCOORD", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0};
 	UINT numElements = ARRAYSIZE(layout);
 
 	HRESULT hr = this->device->CreateInputLayout(layout, numElements, vertexShader.GetBuffer()->GetBufferPointer(), vertexShader.GetBuffer()->GetBufferSize(), this->inputLayout.GetAddressOf());
@@ -219,10 +243,14 @@ bool Graphics::InitializeScene()
 	Vertex v[] =
 	{
 		// must be clockwise
-		Vertex(-0.5f, -0.5f,1.0f,	1.0f,0.0f,0.0f),//left bottom
-		Vertex(0.0f,  0.5f, 1.0f,	1.0f,0.0f,0.0f),//top middle
-		Vertex(0.5f, -0.5f,	1.0f,	1.0f,0.0f,0.0f)//right middle
-		//Vertex(1.0f, 0.1f)
+		Vertex(-1.0f, -1.0f,1.0f,	0.0f,1.0f),//left botAtom
+		Vertex(-1.0f,  1.0f, 1.0f,	0.0f,0.0f),//top middle
+		Vertex(1.0f, 1.0f,	1.0f,	1.0f,0.0f),//right middle
+		
+		Vertex(-1.0f, -1.0f,1.0f,	0.0f,1.0f),
+		Vertex(1.0f, 1.0f,	1.0f,	1.0f,0.0f),
+		Vertex(1.0f, -1.0f, 1.0f,	1.0f,1.0f)
+		//right middle
 	};
 	D3D11_BUFFER_DESC vertexBufferDesc;
 	ZeroMemory(&vertexBufferDesc, sizeof(vertexBufferDesc));
@@ -243,9 +271,15 @@ bool Graphics::InitializeScene()
 		ErrorLogger::Log(hr, "Failed to create vertex buffer. ");
 		return false;
 	}
-
+	//read texture from file
+	hr = DirectX::CreateWICTextureFromFile(device.Get(), L"..\\DirectX 11 Engine VS2017\\Texture\\OIP-C.jpg", NULL, myTexture.GetAddressOf());
+	if (FAILED(hr))
+	{
+		ErrorLogger::Log(hr, "Failed to create wic texture from file. ");
+		return false;
+	}
 	//Green
-	
+	/*
 	//Vertex
 	Vertex v2[] =
 	{
@@ -273,6 +307,6 @@ bool Graphics::InitializeScene()
 	{
 		ErrorLogger::Log(hr, "Failed to create vertex buffer. ");
 		return false;
-	}
+	}*/
 	return true;
 }

@@ -11,14 +11,21 @@ bool RenderWindow::Initialize( HINSTANCE hInstance, std::string window_title, st
 	this->height = height;
 	//Rigister Window
 	this->RegisterWindowClass();
+
+	RECT wr;
+	wr.left = 100;
+	wr.top = 100;
+	wr.right = wr.left + this->width;
+	wr.bottom = wr.top + this->height;
+	AdjustWindowRect(&wr, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, FALSE);
 	//Create Window
 	this->handle = CreateWindowEx(
 		0,
 		this->window_class_wide.c_str(),
 		this->window_title_wide.c_str(),
 		WS_BORDER | WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU,
-		200, 100,//X,Y Position
-		this->width, this->height,
+		wr.left, wr.top,//X,Y Position
+		wr.right - wr.left, wr.bottom - wr.top,
 		nullptr, nullptr, this->hInstance, nullptr
 	);
 	//Log

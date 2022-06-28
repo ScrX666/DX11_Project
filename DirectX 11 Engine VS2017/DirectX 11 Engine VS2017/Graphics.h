@@ -4,6 +4,7 @@
 #include "ErrorLogger.h"
 #include "Shaders.h"
 #include "Vertex.h"
+#include <WICTextureLoader.h>
 class Graphics
 {
 public :
@@ -26,7 +27,7 @@ private:
 	
 
 	Microsoft::WRL::ComPtr<ID3D11Buffer> vertexBuffer;
-	Microsoft::WRL::ComPtr<ID3D11Buffer> vertexBuffer2;
+
 
 
 	Microsoft::WRL::ComPtr <ID3D11InputLayout> inputLayout;
@@ -36,4 +37,6 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> depthStencilBuffer;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> depthStencilState;
 
+	Microsoft::WRL::ComPtr<ID3D11SamplerState> samplerState;
+	Microsoft::WRL::ComPtr <ID3D11ShaderResourceView> myTexture;
 };
