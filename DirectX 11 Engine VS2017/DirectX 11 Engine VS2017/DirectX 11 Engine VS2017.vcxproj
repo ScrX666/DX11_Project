@@ -152,7 +152,11 @@
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="ErrorLogger.cpp" />
     <ClCompile Include="Graphics.cpp" />
+    <ClCompile Include="KeyboardClass.cpp" />
     <ClCompile Include="KeyboardEvents.cpp" />
+    <ClCompile Include="Model.cpp" />
+    <ClCompile Include="MouseClass.cpp" />
+    <ClCompile Include="MouseEvent.cpp" />
     <ClCompile Include="RenderWindow.cpp" />
     <ClCompile Include="Shaders.cpp" />
     <ClCompile Include="Source.cpp" />
@@ -169,6 +173,9 @@
     <ClInclude Include="indexBuffer.h" />
     <ClInclude Include="KeyboardClass.h" />
     <ClInclude Include="KeyboardEvents.h" />
+    <ClInclude Include="Model.h" />
+    <ClInclude Include="MouseClass.h" />
+    <ClInclude Include="MouseEvent.h" />
     <ClInclude Include="RenderWindow.h" />
     <ClInclude Include="Shaders.h" />
     <ClInclude Include="StringConverter.h" />

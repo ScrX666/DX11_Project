@@ -5,10 +5,8 @@
 #include "Shaders.h"
 #include "Vertex.h"
 #include <WICTextureLoader.h>
-#include "VertexBuffer.h"
-#include "indexBuffer.h"
-#include "ConstantBuffer.h"
 #include "Camera.h"
+#include "Model.h"
 class Graphics
 {
 public :
@@ -17,6 +15,7 @@ public :
 	bool InitializeDirectX(HWND hwnd);
 	bool InitializeShader();
 	bool InitializeScene();
+	Camera camera;
 private:
 	
 
@@ -28,11 +27,12 @@ private:
 	
 	VertexShader vertexShader;
 	PixelShader pixelShader;
-	ConstantBuffer<CB_VS_vertexshader> constantBuffer;
+
+protected:
+	ConstantBuffer<CB_VS_vertexshader> cb_vs_vertexshader;
 
 	
-	VertexBuffer<Vertex> vertexBuffer;
-	IndexBuffer indicesBuffer;
+	Model model;
 
 
 	Microsoft::WRL::ComPtr <ID3D11InputLayout> inputLayout;
@@ -47,5 +47,5 @@ private:
 
 	int windowWidth = 0;
 	int windowHeight = 0;
-	Camera camera;
+
 };

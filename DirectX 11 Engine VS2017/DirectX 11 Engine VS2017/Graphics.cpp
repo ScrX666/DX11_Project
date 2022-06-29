@@ -22,6 +22,8 @@ bool Graphics::Initialize(HWND hwnd, int width, int height)
 }
 void Graphics::RenderFrame()
 {
+	
+
 	//background Color
 	float bgColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
@@ -40,32 +42,11 @@ void Graphics::RenderFrame()
 
 
 	UINT offset = 0;
-
-	//Updata Constant Buffer
-	CB_VS_vertexshader data;
-
-	//Camera Initialize
-	DirectX::XMMATRIX world = XMMatrixIdentity();
-	camera.AdjustRotation(0.0f, 0.0f, 0.01f);
-	//Transform
-	constantBuffer.data.mat = world * camera.GetViewMatrix() * camera.GetProjectionMatrix();
-	constantBuffer.data.mat = DirectX::XMMatrixTranspose(constantBuffer.data.mat);
-	if (!constantBuffer.ApplyChanges())
-		return;
-	this->deviceContext->VSSetConstantBuffers(0, 1, constantBuffer.GetAddressOf());
-
-	//draw green
-
-	//draw red
-	this->deviceContext->PSSetShaderResources(0, 1, this->myTexture.GetAddressOf());//set to pixel shader
-	this->deviceContext->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), vertexBuffer.StridePtr(), &offset);
-	this->deviceContext->IASetIndexBuffer(indicesBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-
-	this->deviceContext->DrawIndexed(indicesBuffer.BufferSize(), 0, 0);
-
-
-
-
+	{
+		camera.AdjustRotation(0.0f, 0.0f, 0.0f);
+		//camera.SetLookAtPos(XMFLOAT3(0.0f, 0.0f, 0.0f));
+		this->model.Draw(camera.GetViewMatrix() * camera.GetProjectionMatrix());
+	}
 	this->swapChain->Present(1, NULL);
 }
 
@@ -194,7 +175,7 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 	D3D11_RASTERIZER_DESC rasterizerDesc;
 	ZeroMemory(&rasterizerDesc, sizeof(D3D11_RASTERIZER_DESC));
 	rasterizerDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;//can change to rasterizer WIREFRAME or SOLID
-	rasterizerDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_BACK;
+	rasterizerDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_NONE;
 	// change rasterizer to counter clockwise
 	//rasterizerDesc.FrontCounterClockwise = TRUE;
 
@@ -259,54 +240,40 @@ bool Graphics::InitializeScene()
 {
 	//Red
 	//Vertex
-	Vertex v[] =
-	{
-		// must be clockwise
-		Vertex(-1.0f, -1.0f, 0.0f,	0.0f,1.0f),//left botAtom -[0]
-		Vertex(-1.0f,  1.0f, 0.0f,	0.0f,0.0f),//top middle		-[1]
-		Vertex(1.0f, 1.0f,	 0.0f,	1.0f,0.0f),//right middle	-[2]
-		Vertex(1.0f, -1.0f,  0.0f,	1.0f,1.0f)					//-[3]
-		//right middle
-	};
-	DWORD indices[] =
-	{
-		0,1,2,
-		0,2,3
-	};
+
 	//Load Vertex Buffer
 
 
-	HRESULT hr = this->vertexBuffer.Initialize(this->device.Get(), v, ARRAYSIZE(v));
-	if (FAILED(hr))
-	{
-		ErrorLogger::Log(hr, "Failed to create vertex buffer. ");
-		return false;
-	}
+
 	//Load Index buffer
-	hr = this->indicesBuffer.Initialize(this->device.Get(), indices, ARRAYSIZE(indices));
-	if (FAILED(hr))
-	{
-		ErrorLogger::Log(hr, "Failed to create indices buffer ");
-		return false;
-	}
+
 
 	//Load texture from file
-	hr = DirectX::CreateWICTextureFromFile(device.Get(), L"..\\DirectX 11 Engine VS2017\\Texture\\OIP-C.jpg", NULL, myTexture.GetAddressOf());
+	HRESULT hr = DirectX::CreateWICTextureFromFile(device.Get(), L"..\\DirectX 11 Engine VS2017\\Texture\\OIP-C.jpg", NULL, myTexture.GetAddressOf());
 	if (FAILED(hr))
 	{
 		ErrorLogger::Log(hr, "Failed to create wic texture from file. ");
 		return false;
 	}
 
-	//Load constant buffer
+	//Initialize constant buffer
 
-	hr = this->constantBuffer.Initialize(this->device.Get(), this->deviceContext.Get());
+	hr = this->cb_vs_vertexshader.Initialize(this->device.Get(), this->deviceContext.Get());
 	if (FAILED(hr))
 	{
 		ErrorLogger::Log(hr, "Failed to create constant buffer. ");
 		return false;
 	}
-	
+
+	//Initialize Model
+	bool initializeModelSuccessfully = model.Initialize(this->device.Get(), this->deviceContext.Get(), this->myTexture.Get(), &cb_vs_vertexshader);
+	if (!initializeModelSuccessfully)
+	{
+		ErrorLogger::Log(hr, "Failed to Initialize model. ");
+		
+		return false;
+	}
+
 	camera.SetPosition(0.0f, 0.0f, -2.0f);
 	camera.SetProjectionValues(90.0f, static_cast<float>(this->windowWidth) / static_cast<float>(this->windowHeight), 0.1f, 1000.0f);
 
