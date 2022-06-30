@@ -1,6 +1,7 @@
 #include "ErrorLogger.h"
 #include <comdef.h>
 
+
 void ErrorLogger::Log(std::string message)
 {
 	std::string error_message = "Error : " + message;

@@ -249,7 +249,7 @@ bool Graphics::InitializeScene()
 
 
 	//Load texture from file
-	HRESULT hr = DirectX::CreateWICTextureFromFile(device.Get(), L"..\\DirectX 11 Engine VS2017\\Texture\\OIP-C.jpg", NULL, myTexture.GetAddressOf());
+	HRESULT hr = DirectX::CreateWICTextureFromFile(device.Get(), L"..\\DirectX 11 Engine VS2017\\Texture\\diffuse.png", NULL, myTexture.GetAddressOf());
 	if (FAILED(hr))
 	{
 		ErrorLogger::Log(hr, "Failed to create wic texture from file. ");
@@ -266,7 +266,7 @@ bool Graphics::InitializeScene()
 	}
 
 	//Initialize Model
-	bool initializeModelSuccessfully = model.Initialize(this->device.Get(), this->deviceContext.Get(), this->myTexture.Get(), &cb_vs_vertexshader);
+	bool initializeModelSuccessfully = model.Initialize("..\\DirectX 11 Engine VS2017\\Data\\golem.obj", this->device.Get(), this->deviceContext.Get(), this->myTexture.Get(), &cb_vs_vertexshader);
 	if (!initializeModelSuccessfully)
 	{
 		ErrorLogger::Log(hr, "Failed to Initialize model. ");
