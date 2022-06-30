@@ -7,14 +7,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_ LPWSTR    lpCmdLine,
 	_In_ int       nCmdShow)
 {
-	Engine engine;
+	Engine& engine = Engine::Get();
 	if (engine.Initialize(hInstance, "Test1", "First Window Class", 800, 600))
 	{
 		while (engine.ProcessMessages() == true)
 		{
 			
 			engine.RenderFrame();
-			//engine.Update();
+			engine.Update();
 		}
 	}
 	return 0;

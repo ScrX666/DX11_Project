@@ -53,13 +53,13 @@ unsigned char KeyboardClass::ReadChar()
 
 void KeyboardClass::OnKeyPressed(const unsigned char key)
 {
-	keyStates[key] = false;
+	keyStates[key] = true;
 	keyBuffer.push(KeyboardEvents(KeyboardEvents::EventType::Press, key));
 }
 
 void KeyboardClass::OnKeyReleased(const unsigned char key)
 {
-	keyStates[key] = true;
+	keyStates[key] = false;
 	keyBuffer.push(KeyboardEvents(KeyboardEvents::EventType::Release, key));
 }
 

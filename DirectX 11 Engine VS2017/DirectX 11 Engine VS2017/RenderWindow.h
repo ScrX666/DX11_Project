@@ -1,7 +1,6 @@
 #pragma once
+
 #include "ErrorLogger.h"
-
-
 
 class RenderWindow
 {

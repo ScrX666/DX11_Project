@@ -1,6 +1,8 @@
 #include "RenderWindow.h"
 
-bool RenderWindow::Initialize( HINSTANCE hInstance, std::string window_title, std::string window_class, int width, int height)
+#include "Engine.h"
+
+bool RenderWindow::Initialize(HINSTANCE hInstance, std::string window_title, std::string window_class, int width, int height)
 {
 	this->hInstance = hInstance;
 	this->window_title = window_title;
@@ -83,7 +85,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParm)
 	}
 
 	}
-	return DefWindowProc(hWnd, msg, wParam, lParm);
+	return Engine::Get().WndProc(hWnd, msg, wParam, lParm);
 }
 
 void RenderWindow::RegisterWindowClass()

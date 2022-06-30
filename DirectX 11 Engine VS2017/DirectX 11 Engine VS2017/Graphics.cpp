@@ -43,7 +43,7 @@ void Graphics::RenderFrame()
 
 	UINT offset = 0;
 	{
-		camera.AdjustRotation(0.0f, 0.0f, 0.0f);
+		//camera.AdjustRotation(0.0f, 0.01f, 0.0f);
 		//camera.SetLookAtPos(XMFLOAT3(0.0f, 0.0f, 0.0f));
 		this->model.Draw(camera.GetViewMatrix() * camera.GetProjectionMatrix());
 	}
