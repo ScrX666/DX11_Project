@@ -79,6 +79,7 @@ LRESULT WindowContainer::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 	{
 		int x = LOWORD(lParam);
 		int y = HIWORD(lParam);
+
 		mouse.OnLeftPressed(x, y);
 		return 0;
 	}
@@ -86,6 +87,7 @@ LRESULT WindowContainer::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 	{
 		int x = LOWORD(lParam);
 		int y = HIWORD(lParam);
+
 		mouse.OnRightPressed(x, y);
 		return 0;
 	}

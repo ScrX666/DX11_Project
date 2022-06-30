@@ -30,15 +30,13 @@ void Engine::Update()
 	{
 		unsigned char ch = keyboard.ReadChar();
 	}
+
 	while (!keyboard.KeyBufferIsEmpty())
 	{
 		KeyboardEvents kbe = keyboard.ReadKey();
 		unsigned char keycode = kbe.GetKeyCode();
 	}
-	while (!mouse.EventBufferIsEmpty())
-	{
-		MouseEvent me = mouse.ReadEvent();
-	}
+
 	while (!mouse.EventBufferIsEmpty())
 	{
 		MouseEvent me = mouse.ReadEvent();
@@ -55,7 +53,6 @@ void Engine::Update()
 	const float cameraSpeed = 0.02f;
 	if (keyboard.KeyIsPressed('W'))
 	{
-		OutputDebugString(L" In\n");
 		this->gfx.camera.AdjustPosition(this->gfx.camera.GetForwardVector() * cameraSpeed);
 	}
 	if (keyboard.KeyIsPressed('A'))
@@ -73,7 +70,11 @@ void Engine::Update()
 	}
 	if (keyboard.KeyIsPressed('Z'))
 	{
-		this->gfx.camera.AdjustPosition(0.0f, cameraSpeed, 0.0f);
+		this->gfx.camera.AdjustPosition(0.0f, 0.3f, 0.0f);
+	}
+	if (keyboard.KeyIsPressed('X'))
+	{
+		this->gfx.camera.AdjustPosition(0.0f, -0.3f, 0.0f);
 	}
 	if (keyboard.KeyIsPressed(VK_SPACE))
 	{

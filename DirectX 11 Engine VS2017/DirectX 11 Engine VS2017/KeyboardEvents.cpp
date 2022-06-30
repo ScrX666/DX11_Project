@@ -13,7 +13,7 @@ KeyboardEvents::KeyboardEvents(const EventType type, const unsigned char key)
 	type(type),
 	key(key)
 {
-
+	
 }
 bool KeyboardEvents::isPress() const
 {
