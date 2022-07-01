@@ -1,7 +1,7 @@
 #pragma once
 
 #include "WindowContainer.h"
-
+#include "Timer.h"
 class Engine :public WindowContainer
 {
 public:
@@ -12,4 +12,6 @@ public:
 
 public:
 	static Engine& Get();
+private:
+	Timer timer;
 };

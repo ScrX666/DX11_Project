@@ -7,6 +7,9 @@
 #include <WICTextureLoader.h>
 #include "Camera.h"
 #include "Model.h"
+#include <SpriteBatch.h>
+#include <SpriteFont.h>
+#include "Timer.h"
 class Graphics
 {
 public :
@@ -45,7 +48,11 @@ protected:
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> samplerState;
 	Microsoft::WRL::ComPtr <ID3D11ShaderResourceView> myTexture;
 
+	std::unique_ptr<SpriteBatch> spriteBatch;
+	std::unique_ptr<SpriteFont> spriteFont;
+
 	int windowWidth = 0;
 	int windowHeight = 0;
+	Timer fpsTimer;
 
 };

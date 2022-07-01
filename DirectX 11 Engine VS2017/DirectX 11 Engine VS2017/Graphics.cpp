@@ -2,6 +2,7 @@
 
 bool Graphics::Initialize(HWND hwnd, int width, int height)
 {
+	fpsTimer.Start();
 	this->windowWidth = width;
 	this->windowHeight = height;
 
@@ -25,7 +26,7 @@ void Graphics::RenderFrame()
 	
 
 	//background Color
-	float bgColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	float bgColor[] = { 0.0f, 0.8f, 0.8f, 1.0f };
 
 	//clear view
 	this->deviceContext->ClearRenderTargetView(this->renderTargetView.Get(), bgColor);
@@ -47,6 +48,21 @@ void Graphics::RenderFrame()
 		//camera.SetLookAtPos(XMFLOAT3(0.0f, 0.0f, 0.0f));
 		this->model.Draw(camera.GetViewMatrix() * camera.GetProjectionMatrix());
 	}
+
+	//Draw Text
+	static int fpsCounter = 0;
+	static std::string fpsString = "FPS = 0";
+	fpsCounter += 1;
+	if (fpsTimer.GetMilisecondsElapsed() > 1000.0)
+	{
+		fpsString = "FPS : " + std::to_string(fpsCounter);
+		fpsCounter = 0;
+		fpsTimer.Restart();
+	}
+
+	spriteBatch->Begin();
+	spriteFont->DrawString(spriteBatch.get(), StringConverter::StringToWide(fpsString).c_str(), DirectX::XMFLOAT2(0, 0), DirectX::Colors::Red, 0.0f, DirectX::XMFLOAT2(0.0f, 0.0f), DirectX::XMFLOAT2(1.0f, 1.0f));
+	spriteBatch->End();
 	this->swapChain->Present(1, NULL);
 }
 
@@ -249,7 +265,7 @@ bool Graphics::InitializeScene()
 
 
 	//Load texture from file
-	HRESULT hr = DirectX::CreateWICTextureFromFile(device.Get(), L"..\\DirectX 11 Engine VS2017\\Texture\\diffuse.png", NULL, myTexture.GetAddressOf());
+	HRESULT hr = DirectX::CreateWICTextureFromFile(device.Get(), L"..\\DirectX 11 Engine VS2017\\Texture\\uv_test.png", NULL, myTexture.GetAddressOf());
 	if (FAILED(hr))
 	{
 		ErrorLogger::Log(hr, "Failed to create wic texture from file. ");
@@ -266,15 +282,18 @@ bool Graphics::InitializeScene()
 	}
 
 	//Initialize Model
-	bool initializeModelSuccessfully = model.Initialize("..\\DirectX 11 Engine VS2017\\Data\\golem.obj", this->device.Get(), this->deviceContext.Get(), this->myTexture.Get(), &cb_vs_vertexshader);
+	bool initializeModelSuccessfully = model.Initialize("..\\DirectX 11 Engine VS2017\\Data\\myobj.obj", this->device.Get(), this->deviceContext.Get(), this->myTexture.Get(), &cb_vs_vertexshader);
 	if (!initializeModelSuccessfully)
 	{
 		ErrorLogger::Log(hr, "Failed to Initialize model. ");
 		
 		return false;
 	}
+	//Initialize Font
+	spriteBatch = std::make_unique<DirectX::SpriteBatch>(this->deviceContext.Get());
+	spriteFont = std::make_unique<DirectX::SpriteFont>(this->device.Get(), L"..\\DirectX 11 Engine VS2017\\Data\\myFont.spritefont");
 
-	camera.SetPosition(0.0f, 0.0f, -2.0f);
+	camera.SetPosition(0.0f, 0.0f, -5.0f);
 	camera.SetProjectionValues(90.0f, static_cast<float>(this->windowWidth) / static_cast<float>(this->windowHeight), 0.1f, 1000.0f);
 
 	return true;
