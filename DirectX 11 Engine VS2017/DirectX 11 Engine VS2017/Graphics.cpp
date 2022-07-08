@@ -33,7 +33,7 @@ void Graphics::RenderFrame()
 	this->deviceContext->ClearDepthStencilView(this->depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	//Before Draw
 	this->deviceContext->IASetInputLayout(inputLayout.Get());
-	this->deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	this->deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	this->deviceContext->RSSetState(rasterizerState.Get());
 	this->deviceContext->OMSetDepthStencilState(depthStencilState.Get(), 0);
 	this->deviceContext->PSSetSamplers(0, 1, this->samplerState.GetAddressOf());
@@ -44,12 +44,14 @@ void Graphics::RenderFrame()
 
 	UINT offset = 0;
 	{
+		//camera.SetRotation(0.0f, 1.0f, 0.0f);
 		//camera.AdjustRotation(0.0f, 0.01f, 0.0f);
 		//camera.SetLookAtPos(XMFLOAT3(0.0f, 0.0f, 0.0f));
 		this->model.Draw(camera.GetViewMatrix() * camera.GetProjectionMatrix());
 	}
 
 	//Draw Text
+	
 	static int fpsCounter = 0;
 	static std::string fpsString = "FPS = 0";
 	fpsCounter += 1;
@@ -62,6 +64,7 @@ void Graphics::RenderFrame()
 
 	spriteBatch->Begin();
 	spriteFont->DrawString(spriteBatch.get(), StringConverter::StringToWide(fpsString).c_str(), DirectX::XMFLOAT2(0, 0), DirectX::Colors::Red, 0.0f, DirectX::XMFLOAT2(0.0f, 0.0f), DirectX::XMFLOAT2(1.0f, 1.0f));
+	//spriteFont->DrawString(spriteBatch.get(), (std::string) adapater (AdapterReader::GetAdapters().begin(), AdapterReader::GetAdapters().end()), DirectX::XMFLOAT2(3, 0), DirectX::Colors::Red, 0.0f, DirectX::XMFLOAT2(0.0f, 0.0f), DirectX::XMFLOAT2(1.0f, 1.0f));
 	spriteBatch->End();
 	this->swapChain->Present(1, NULL);
 }
@@ -282,7 +285,7 @@ bool Graphics::InitializeScene()
 	}
 
 	//Initialize Model
-	bool initializeModelSuccessfully = model.Initialize("..\\DirectX 11 Engine VS2017\\Data\\myobj.obj", this->device.Get(), this->deviceContext.Get(), this->myTexture.Get(), &cb_vs_vertexshader);
+	bool initializeModelSuccessfully = model.Initialize("..\\DirectX 11 Engine VS2017\\Data\\xxx.fbx", this->device.Get(), this->deviceContext.Get(), this->myTexture.Get(), &cb_vs_vertexshader);
 	if (!initializeModelSuccessfully)
 	{
 		ErrorLogger::Log(hr, "Failed to Initialize model. ");

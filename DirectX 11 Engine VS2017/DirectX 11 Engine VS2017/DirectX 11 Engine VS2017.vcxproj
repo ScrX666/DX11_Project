@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.Windows.CppWinRT.2.0.210806.1\build\native\Microsoft.Windows.CppWinRT.props" Condition="Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.210806.1\build\native\Microsoft.Windows.CppWinRT.props')" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -152,44 +153,91 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AdapterReader.cpp" />
+    <None Include="C:\Users\Administrator\Desktop\DirectX12Lab-master\DirectX12Lab-master\DX12Lab\Source\pch.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <None Include="Common\d3dUtil.cpp" />
+    <None Include="Common\DDSTextureLoader.cpp" />
+    <None Include="Common\GameTimer.cpp" />
+    <None Include="Common\GeometryGenerator.cpp" />
+    <None Include="Common\MathHelper.cpp" />
+    <None Include="Common\RenderCore.cpp" />
+    <None Include="Common\RenderTarget.cpp" />
+    <None Include="Common\Texture2D.cpp" />
+    <None Include="Core.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="ErrorLogger.cpp" />
+    <None Include="FMathLib.cpp" />
+    <None Include="FrameResource.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="KeyboardClass.cpp" />
     <ClCompile Include="KeyboardEvents.cpp" />
+    <None Include="LightHelper.cpp" />
+    <None Include="LoadM3d.cpp" />
+    <None Include="MathHelper.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <None Include="MeshGeometry.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="MouseClass.cpp" />
     <ClCompile Include="MouseEvent.cpp" />
     <ClCompile Include="RenderWindow.cpp" />
+    <None Include="Shader.cpp" />
     <ClCompile Include="Shaders.cpp" />
+    <None Include="SkinData.cpp" />
+    <None Include="SkinMesh.cpp" />
+    <None Include="SkinnedModel.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="StringConverter.cpp" />
+    <None Include="StringHelper.cpp" />
     <ClCompile Include="Timer.cpp" />
+    <None Include="VS.cpp" />
     <ClCompile Include="WindowContainer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AdapterReader.h" />
+    <None Include="Animation.h" />
+    <None Include="C:\Users\Administrator\Desktop\DirectX12Lab-master\DirectX12Lab-master\DX12Lab\Source\pch.h" />
     <ClInclude Include="Camera.h" />
+    <None Include="Common\d3dUtil.h" />
+    <None Include="Common\d3dx12.h" />
+    <None Include="Common\DDSTextureLoader.h" />
+    <None Include="Common\GameTimer.h" />
+    <None Include="Common\GeometryGenerator.h" />
+    <None Include="Common\MathHelper.h" />
+    <None Include="Common\RenderCore.h" />
+    <None Include="Common\RenderTarget.h" />
+    <None Include="Common\Texture2D.h" />
+    <None Include="Common\UploadBuffer.h" />
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="ConstantBufferTypes.h" />
+    <None Include="Core.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="ErrorLogger.h" />
+    <None Include="FMathLib.h" />
+    <None Include="FrameResource.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="indexBuffer.h" />
     <ClInclude Include="KeyboardClass.h" />
     <ClInclude Include="KeyboardEvents.h" />
+    <None Include="LightHelper.h" />
+    <None Include="LoadM3d.h" />
+    <None Include="MathHelper.h" />
     <ClInclude Include="Mesh.h" />
+    <None Include="MeshGeometry.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="MouseClass.h" />
     <ClInclude Include="MouseEvent.h" />
     <ClInclude Include="RenderWindow.h" />
+    <None Include="Shader.h" />
     <ClInclude Include="Shaders.h" />
+    <None Include="SkinData.h" />
+    <None Include="SkinMesh.h" />
+    <None Include="SkinnedModel.h" />
     <ClInclude Include="StringConverter.h" />
+    <None Include="StringHelper.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="VertexBuffer.h" />
+    <None Include="VS.h" />
     <ClInclude Include="WindowContainer.h" />
   </ItemGroup>
   <ItemGroup>
@@ -203,6 +251,22 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
+    <FxCompile Include="SkinPS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">PSMAIN</EntryPointName>
+    </FxCompile>
+    <FxCompile Include="SkinVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VSMAIN</EntryPointName>
+    </FxCompile>
     <FxCompile Include="VertexShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
@@ -214,7 +278,21 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Common\FMathLib.inl" />
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\directxmesh_desktop_win10.2022.5.10.2\build\native\directxmesh_desktop_win10.targets" Condition="Exists('..\packages\directxmesh_desktop_win10.2022.5.10.2\build\native\directxmesh_desktop_win10.targets')" />
+    <Import Project="..\packages\Microsoft.Windows.CppWinRT.2.0.210806.1\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.210806.1\build\native\Microsoft.Windows.CppWinRT.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>这台计算机上缺少此项目引用的 NuGet 程序包。使用“NuGet 程序包还原”可下载这些程序包。有关更多信息，请参见 http://go.microsoft.com/fwlink/?LinkID=322105。缺少的文件是 {0}。</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\directxmesh_desktop_win10.2022.5.10.2\build\native\directxmesh_desktop_win10.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\directxmesh_desktop_win10.2022.5.10.2\build\native\directxmesh_desktop_win10.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.210806.1\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Windows.CppWinRT.2.0.210806.1\build\native\Microsoft.Windows.CppWinRT.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.210806.1\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Windows.CppWinRT.2.0.210806.1\build\native\Microsoft.Windows.CppWinRT.targets'))" />
+  </Target>
 </Project>

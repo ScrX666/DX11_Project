@@ -88,6 +88,8 @@ void Engine::Update()
 	{
 		this->gfx.camera.AdjustPosition(this->gfx.camera.GetUpVector() * cameraSpeed * deltaTime);
 	}
+
+
 }
 void Engine::RenderFrame()
 {
