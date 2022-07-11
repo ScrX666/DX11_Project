@@ -171,10 +171,10 @@
     <ClCompile Include="KeyboardClass.cpp" />
     <ClCompile Include="KeyboardEvents.cpp" />
     <None Include="LightHelper.cpp" />
-    <None Include="LoadM3d.cpp" />
     <None Include="MathHelper.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <None Include="MeshGeometry.cpp" />
+    <ClCompile Include="MeshGeometryClass.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="MouseClass.cpp" />
     <ClCompile Include="MouseEvent.cpp" />
@@ -195,6 +195,7 @@
     <ClInclude Include="AdapterReader.h" />
     <None Include="Animation.h" />
     <None Include="C:\Users\Administrator\Desktop\DirectX12Lab-master\DirectX12Lab-master\DX12Lab\Source\pch.h" />
+    <None Include="BasicModel.h" />
     <ClInclude Include="Camera.h" />
     <None Include="Common\d3dUtil.h" />
     <None Include="Common\d3dx12.h" />
@@ -222,6 +223,7 @@
     <None Include="MathHelper.h" />
     <ClInclude Include="Mesh.h" />
     <None Include="MeshGeometry.h" />
+    <ClInclude Include="MeshGeometryClass.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="MouseClass.h" />
     <ClInclude Include="MouseEvent.h" />

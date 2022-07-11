@@ -1,4 +1,5 @@
 #include "Graphics.h"
+#include "MeshGeometryClass.h"
 
 bool Graphics::Initialize(HWND hwnd, int width, int height)
 {
@@ -48,6 +49,9 @@ void Graphics::RenderFrame()
 		//camera.AdjustRotation(0.0f, 0.01f, 0.0f);
 		//camera.SetLookAtPos(XMFLOAT3(0.0f, 0.0f, 0.0f));
 		this->model.Draw(camera.GetViewMatrix() * camera.GetProjectionMatrix());
+		
+		this->mesh.DrawAllMesh(deviceContext.Get(),inputLayout.Get(), vertexShader.GetShader(), pixelShader.GetShader(), cb_vs_vertexshader.GetAddressOf(), cb_vs_vertexshader.GetAddressOf(), cb_vs_vertexshader.GetAddressOf(), cb_vs_vertexshader.GetAddressOf());
+		
 	}
 
 	//Draw Text
@@ -283,9 +287,11 @@ bool Graphics::InitializeScene()
 		ErrorLogger::Log(hr, "Failed to create constant buffer. ");
 		return false;
 	}
-
+	
 	//Initialize Model
-	bool initializeModelSuccessfully = model.Initialize("..\\DirectX 11 Engine VS2017\\Data\\xxx.fbx", this->device.Get(), this->deviceContext.Get(), this->myTexture.Get(), &cb_vs_vertexshader);
+	//bool initializeModelSuccessfully = model.Initialize("..\\DirectX 11 Engine VS2017\\Data\\xxx.fbx", this->device.Get(), this->deviceContext.Get(), this->myTexture.Get(), &cb_vs_vertexshader);
+	mesh.m_pdev = this->device.Get();
+	bool initializeModelSuccessfully = mesh.LoadMeshWithSkinnedAnimation("..\\DirectX 11 Engine VS2017\\Data\\xxx.fbx");
 	if (!initializeModelSuccessfully)
 	{
 		ErrorLogger::Log(hr, "Failed to Initialize model. ");
