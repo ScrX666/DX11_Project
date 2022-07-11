@@ -81,6 +81,9 @@
     <ClCompile Include="Timer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MeshGeometryClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StringConverter.h">
@@ -144,6 +147,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Timer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshGeometryClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -253,9 +259,6 @@
     <None Include="LightHelper.h">
       <Filter>Common</Filter>
     </None>
-    <None Include="LoadM3d.cpp">
-      <Filter>Common</Filter>
-    </None>
     <None Include="LoadM3d.h">
       <Filter>Common</Filter>
     </None>
@@ -306,6 +309,9 @@
     </None>
     <None Include="VS.h">
       <Filter>Common</Filter>
+    </None>
+    <None Include="BasicModel.h">
+      <Filter>Header Files</Filter>
     </None>
   </ItemGroup>
 </Project>

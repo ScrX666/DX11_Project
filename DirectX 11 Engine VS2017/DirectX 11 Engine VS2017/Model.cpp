@@ -1,4 +1,4 @@
-#include "Model.h"
+﻿#include "Model.h"
 #include <map>
 #include <string>
 #include <vector>
@@ -311,6 +311,9 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	return Mesh(this->device, this->deviceContext, vertices, indices);
 }
 
+
+
+
 void Model::UpdateWorldMatrix()
 {
 	this->worldMatrix = XMMatrixIdentity();
@@ -320,4 +323,98 @@ void Model::UpdateWorldMatrix()
 
 //**************************************************
 //**************************************************
+/*
+void Model::LoadMeshWithSkinnedAnimation(const std::string& filePath)
+{
+	Assimp::Importer importer;
 
+	const aiScene* pScene = importer.ReadFile(filePath,
+		aiProcess_Triangulate |
+		aiProcess_ConvertToLeftHanded);
+	if (pScene == nullptr)
+	{
+		exit(-1);
+	}
+
+	static DWORD start, end;
+	static DWORD currentFace;
+	start = end = currentFace = 0;
+	aiMatrix4x4 tempGloabTransform = pScene->mRootNode->mTransformation;
+	tempGloabTransform = tempGloabTransform.Inverse();
+	m_gloabInverseTransform = AiMatrixToXMFLOAT4x4(tempGloabTransform);
+
+	UINT maxNum = 0;
+	for (int i = 0; i < pScene->mNumMeshes; i++)
+	{
+		if (pScene->mMeshes[i]->mNumVertices > maxNum)
+		{
+			maxNum = pScene->mMeshes[i]->mNumVertices;
+		}
+	}
+	mbones.resize(maxNum);
+
+	//MeshGeometryClass::Mesh::VertexPosNormalTex verteics[] = {};
+	for (int i = 0; i < pScene->mNumMeshes; i++)
+	{
+		mMeshTable.emplace_back();
+		Mesh& mesh = mMeshTable.back();
+		mesh.Id = pScene->mNumMeshes;
+
+		aiMesh* aimesh = pScene->mMeshes[i];
+
+		//mbones.resize(aimesh->mNumVertices*aimesh->mNumBones);
+		//mbones.resize(aimesh->mNumBones);
+
+
+		end += start;
+		end += aimesh->mNumVertices;
+
+		vector<XMFLOAT4X4> boneOffset;
+		vector<int> boneToParentIndex;
+	}
+}
+
+	XMFLOAT4X4  Model::AiMatrixToXMFLOAT4x4(aiMatrix4x4 ai)
+	{
+		XMFLOAT4X4 xm;
+		xm._11 = ai.a1;
+		xm._12 = ai.a2;
+		xm._13 = ai.a3;
+		xm._14 = ai.a4;
+		xm._21 = ai.b1;
+		xm._22 = ai.b2;
+		xm._23 = ai.b3;
+		xm._24 = ai.b4;
+		xm._31 = ai.c1;
+		xm._32 = ai.c2;
+		xm._33 = ai.c3;
+		xm._34 = ai.c4;
+		xm._41 = ai.d1;
+		xm._42 = ai.d2;
+		xm._43 = ai.d3;
+		xm._44 = ai.d4;
+		return xm;
+	}
+
+	aiMatrix4x4 Model::XMFLOAT4x4ToAiMatrix(XMFLOAT4X4 xm)
+	{
+		aiMatrix4x4 ai;
+		ai.a1 = xm._11;
+		ai.a2 = xm._12;
+		ai.a3 = xm._13;
+		ai.a4 = xm._14;
+		ai.b1 = xm._21;
+		ai.b2 = xm._22;
+		ai.b3 = xm._23;
+		ai.b4 = xm._24;
+		ai.c1 = xm._31;
+		ai.c2 = xm._32;
+		ai.c3 = xm._33;
+		ai.c4 = xm._34;
+		ai.d1 = xm._41;
+		ai.d2 = xm._42;
+		ai.d3 = xm._43;
+		ai.d4 = xm._44;
+		return ai;
+	}
+	*/

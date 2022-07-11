@@ -23,6 +23,10 @@ private:
 	void ProcessNode(aiNode* node, const aiScene* scene);
 	Mesh ProcessMesh(aiMesh* mesh, const aiScene* scene);
 	void UpdateWorldMatrix();
+	XMFLOAT4X4 AiMatrixToXMFLOAT4x4(aiMatrix4x4 ai);
+	aiMatrix4x4 XMFLOAT4x4ToAiMatrix(XMFLOAT4X4 xm);
+	void LoadMeshWithSkinnedAnimation(const std::string& filePath);
+	void LoadBones(UINT MeshIndex, const aiMesh* pMesh, XMVECTOR& Bones);
 	//**************
 	void parse_meshes(const aiScene* pScene);
 	void parse_single_bone(int mesh_index, const aiBone* pBone);
@@ -40,4 +44,5 @@ private:
 
 
 	XMMATRIX worldMatrix = XMMatrixIdentity();
+	XMMATRIX m_gloabInverseTransform;
 };

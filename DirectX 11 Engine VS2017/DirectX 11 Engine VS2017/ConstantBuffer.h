@@ -9,7 +9,7 @@ private:
 	ConstantBuffer(const ConstantBuffer<T>& rhs);
 private:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> buffer;
-	ID3D11DeviceContext* deviceContext = NULL;
+	ID3D11DeviceContext* deviceContext = nullptr;
 
 public:
 	ConstantBuffer(){}
@@ -37,6 +37,7 @@ public:
 		HRESULT hr = device->CreateBuffer(&desc, 0, buffer.GetAddressOf());
 		return hr;
 	}
+
 	bool ApplyChanges()
 	{
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
