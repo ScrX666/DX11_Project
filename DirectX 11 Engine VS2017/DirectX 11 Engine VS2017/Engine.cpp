@@ -113,6 +113,8 @@ void Engine::Update()
 	memcpy(m_cBufferFrequently->boneTransform, gfx.model.Transforms.data(), gfx.model.Transforms.size() * sizeof(gfx.model.Transforms[0]));
 
 }
+ 
+
 
 void Engine::RenderFrame()
 {
