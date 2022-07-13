@@ -99,9 +99,7 @@ void Engine::Update()
 	
 	//**************************
 	
-
-
-
+	
 	float runningTime = 1;//timer.TotalTime();
 
 	double perFrameTime = 1.0f / 60.0f;
@@ -109,8 +107,8 @@ void Engine::Update()
 
 	//calculate bone animation
 	gfx.model.BoneTransform(runningTime, gfx.model.Transforms);
-
-	memcpy(m_cBufferFrequently->boneTransform, gfx.model.Transforms.data(), gfx.model.Transforms.size() * sizeof(gfx.model.Transforms[0]));
+	
+	//CopyMemory(m_cBufferFrequently->boneTransform, gfx.model.Transforms.data(), gfx.model.Transforms.size() * sizeof(gfx.model.Transforms[0]));
 
 }
  
