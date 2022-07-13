@@ -1,8 +1,9 @@
 #include "Graphics.h"
-#include "MeshGeometryClass.h"
 
 bool Graphics::Initialize(HWND hwnd, int width, int height)
 {
+	//_instance = this;
+
 	fpsTimer.Start();
 	this->windowWidth = width;
 	this->windowHeight = height;
@@ -49,8 +50,9 @@ void Graphics::RenderFrame()
 		//camera.AdjustRotation(0.0f, 0.01f, 0.0f);
 		//camera.SetLookAtPos(XMFLOAT3(0.0f, 0.0f, 0.0f));
 		this->model.Draw(camera.GetViewMatrix() * camera.GetProjectionMatrix());
-		
-		this->mesh.DrawAllMesh(deviceContext.Get(),inputLayout.Get(), vertexShader.GetShader(), pixelShader.GetShader(), cb_vs_vertexshader.GetAddressOf(), cb_vs_vertexshader.GetAddressOf(), cb_vs_vertexshader.GetAddressOf(), cb_vs_vertexshader.GetAddressOf());
+		this->model.DrawAllMesh(deviceContext.Get(), inputLayout.Get(), vertexShader.GetShader(), pixelShader.GetShader(), cb_vs_vertexshader.GetAddressOf(), cb_vs_vertexshader.GetAddressOf(), cb_vs_vertexshader.GetAddressOf(), cb_vs_vertexshader.GetAddressOf());
+
+		//this->mesh.DrawAllMesh(deviceContext.Get(),inputLayout.Get(), vertexShader.GetShader(), pixelShader.GetShader(), cb_vs_vertexshader.GetAddressOf(), cb_vs_vertexshader.GetAddressOf(), cb_vs_vertexshader.GetAddressOf(), cb_vs_vertexshader.GetAddressOf());
 		
 	}
 
@@ -235,7 +237,7 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 
 bool Graphics::InitializeShader()
 {
-	if (!vertexShader.Initialize(device, L"..\\x64\\Debug\\VertexShader.cso"))
+	if (!vertexShader.Initialize(device, L"..\\x64\\Debug\\SkinVS.cso"))//SkinVS.cso
 	{
 		return false;
 	}
@@ -245,8 +247,16 @@ bool Graphics::InitializeShader()
 	}
 
 	D3D11_INPUT_ELEMENT_DESC layout[] =
-	{ "POSITION", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0 ,
-	"TEXCOORD", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0};
+	{ 
+	"POSITION", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0 ,
+	"BONEINDICES",  0, DXGI_FORMAT_R8G8B8A8_UINT,   0, 60, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0,
+	"WEIGHTS",      0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 48, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0,
+	"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0 ,
+	"TEXCOORD", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0 ,
+	
+	};
+
+
 	UINT numElements = ARRAYSIZE(layout);
 
 	HRESULT hr = this->device->CreateInputLayout(layout, numElements, vertexShader.GetBuffer()->GetBufferPointer(), vertexShader.GetBuffer()->GetBufferSize(), this->inputLayout.GetAddressOf());
@@ -290,14 +300,22 @@ bool Graphics::InitializeScene()
 	
 	//Initialize Model
 	//bool initializeModelSuccessfully = model.Initialize("..\\DirectX 11 Engine VS2017\\Data\\xxx.fbx", this->device.Get(), this->deviceContext.Get(), this->myTexture.Get(), &cb_vs_vertexshader);
-	mesh.m_pdev = this->device.Get();
-	bool initializeModelSuccessfully = mesh.LoadMeshWithSkinnedAnimation("..\\DirectX 11 Engine VS2017\\Data\\xxx.fbx");
+
+	model.m_pdev = this->device.Get();
+	model.cb_vs_vertexshader = &cb_vs_vertexshader;
+
+	bool initializeModelSuccessfully = model.Initialize("..\\DirectX 11 Engine VS2017\\Data\\xxx.fbx", device.Get(), deviceContext.Get(), myTexture.Get(), &cb_vs_vertexshader);
+	model.LoadMeshWithSkinnedAnimation("..\\DirectX 11 Engine VS2017\\Data\\xxx.fbx");
 	if (!initializeModelSuccessfully)
 	{
 		ErrorLogger::Log(hr, "Failed to Initialize model. ");
 		
 		return false;
 	}
+
+
+
+
 	//Initialize Font
 	spriteBatch = std::make_unique<DirectX::SpriteBatch>(this->deviceContext.Get());
 	spriteFont = std::make_unique<DirectX::SpriteFont>(this->device.Get(), L"..\\DirectX 11 Engine VS2017\\Data\\myFont.spritefont");

@@ -29,6 +29,8 @@ void Engine::Update()
 	float deltaTime = timer.GetMilisecondsElapsed();
 	timer.Restart();
 
+
+
 	while (!keyboard.CharBufferIsEmpty())
 	{
 		unsigned char ch = keyboard.ReadChar();
@@ -90,10 +92,40 @@ void Engine::Update()
 	}
 
 
+	//**************************
+
+	float runningTime = 1;//timer.TotalTime();
+
+	double perFrameTime = 1.0f / 60.0f;
+	float currentFrames = runningTime / perFrameTime;
+
+	
+
+	//Graphics.model.Transforms.resize(Graphics.model.m_NumBone);
+
+	
+	gfx.model.BoneTransform(runningTime, gfx.model.Transforms);;
+	for (UINT i = 0; i < gfx.model.m_NumBone; i++)
+	{
+		m_cBufferFrequently.boneTransform[i] = XMLoadFloat4x4(&gfx.model.Transforms[i]);
+	}
+
+	//calculate bone animation
+	gfx.model.BoneTransform(runningTime, gfx.model.Transforms);;
+	for (UINT i = 0; i < gfx.model.m_NumBone; i++)
+	{
+		m_cBufferFrequently.boneTransform[i] = XMLoadFloat4x4(&gfx.model.Transforms[i]);
+	}
+
+	this->m_pConstantBuffer->data.mat = XMMatrixTranspose(this->m_pConstantBuffer->data.mat);
+	this->m_pConstantBuffer->ApplyChanges();
+
 }
 void Engine::RenderFrame()
 {
 	gfx.RenderFrame();
+
+
 }
 
 Engine& Engine::Get()

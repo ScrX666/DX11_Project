@@ -10,7 +10,6 @@
 #include <SpriteBatch.h>
 #include <SpriteFont.h>
 #include "Timer.h"
-#include"MeshGeometryClass.h"
 #include"ConstantBuffer.h"
 class Graphics
 {
@@ -21,6 +20,8 @@ public :
 	bool InitializeShader();
 	bool InitializeScene();
 	Camera camera;
+	//static Graphics *_instance;
+	 Model model;
 private:
 	
 
@@ -37,8 +38,7 @@ protected:
 	ConstantBuffer<CB_VS_vertexshader> cb_vs_vertexshader;
 
 	
-	Model model;
-	MeshGeometryClass mesh;
+
 
 
 	Microsoft::WRL::ComPtr <ID3D11InputLayout> inputLayout;

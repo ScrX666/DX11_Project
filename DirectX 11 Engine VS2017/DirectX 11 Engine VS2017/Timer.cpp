@@ -52,3 +52,35 @@ bool Timer::Start()
 		return true;
 	}
 }
+
+float Timer::TotalTime()const
+{
+	// If we are stopped, do not count the time that has passed since we stopped.
+	// Moreover, if we previously already had a pause, the distance 
+	// m_StopTime - m_BaseTime includes paused time, which we do not want to count.
+	// To correct this, we can subtract the paused time from m_StopTime:  
+	//
+	//                     |<--paused time-->|
+	// ----*---------------*-----------------*------------*------------*------> time
+	//  m_BaseTime       m_StopTime        startTime     m_StopTime    m_CurrTime
+
+	if (m_Stopped)
+	{
+		return (float)(((m_StopTime - m_PausedTime) - m_BaseTime) * m_SecondsPerCount);
+	}
+
+	// The distance m_CurrTime - m_BaseTime includes paused time,
+	// which we do not want to count.  To correct this, we can subtract 
+	// the paused time from m_CurrTime:  
+	//
+	//  (m_CurrTime - m_PausedTime) - m_BaseTime 
+	//
+	//                     |<--paused time-->|
+	// ----*---------------*-----------------*------------*------> time
+	//  m_BaseTime       m_StopTime        startTime     m_CurrTime
+
+	else
+	{
+		return (float)(((m_CurrTime - m_PausedTime) - m_BaseTime) * m_SecondsPerCount);
+	}
+}
