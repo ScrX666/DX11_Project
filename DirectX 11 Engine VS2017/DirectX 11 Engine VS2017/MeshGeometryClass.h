@@ -47,6 +47,7 @@ public:
 	template <class T>
 	using ComPtr = Microsoft::WRL::ComPtr<T>;
 	ComPtr<ID3D11Device> m_pdev;
+	ConstantBuffer<CB_VS_vertexshader>* cb_vs_vertexshader;
 
 	class Mesh
 	{

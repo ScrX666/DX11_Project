@@ -15,16 +15,9 @@ public:
 
 	struct CBufferReFreashFrequently
 	{
-		DirectX::XMMATRIX world;
-		DirectX::XMMATRIX view;
-		DirectX::XMMATRIX worldInvTranspose;
 		DirectX::XMMATRIX boneTransform[100];
 	};
 
-	struct CBufferReFreashRarely
-	{
-		DirectX::XMINT4 g_InstanceMatricesWidth;
-	};
 
 	struct CBufferReFreshOnResize
 	{
@@ -33,10 +26,7 @@ public:
 
 private:
 	Timer timer;
+	Camera camera;
+	CBufferReFreashFrequently *m_cBufferFrequently;
 
-	CBufferReFreashFrequently m_cBufferFrequently;
-
-	std::shared_ptr<Camera> m_pCamera;
-
-	ConstantBuffer<CB_VS_vertexshader> *m_pConstantBuffer;
 };

@@ -6,6 +6,7 @@
 bool Engine::Initialize( HINSTANCE hInstance, std::string window_title, std::string window_class, int width, int height)
 {
 	timer.Start();
+
 	bool InitializeWindowSuccessfully =	render_window.Initialize(hInstance, window_title, window_class, width, height);
 	if (!InitializeWindowSuccessfully)
 	{
@@ -17,6 +18,10 @@ bool Engine::Initialize( HINSTANCE hInstance, std::string window_title, std::str
 	{
 		return false;
 	}
+
+	gfx.model.Transforms.resize(gfx.model.m_NumBone);
+	gfx.model.BoneTransform(0.0f, gfx.model.Transforms);;
+
 
 	return true;
 }
@@ -91,41 +96,27 @@ void Engine::Update()
 		this->gfx.camera.AdjustPosition(this->gfx.camera.GetUpVector() * cameraSpeed * deltaTime);
 	}
 
-
+	
 	//**************************
+	
+
+
 
 	float runningTime = 1;//timer.TotalTime();
 
 	double perFrameTime = 1.0f / 60.0f;
 	float currentFrames = runningTime / perFrameTime;
 
-	
-
-	//Graphics.model.Transforms.resize(Graphics.model.m_NumBone);
-
-	
-	gfx.model.BoneTransform(runningTime, gfx.model.Transforms);;
-	for (UINT i = 0; i < gfx.model.m_NumBone; i++)
-	{
-		m_cBufferFrequently.boneTransform[i] = XMLoadFloat4x4(&gfx.model.Transforms[i]);
-	}
-
 	//calculate bone animation
-	gfx.model.BoneTransform(runningTime, gfx.model.Transforms);;
-	for (UINT i = 0; i < gfx.model.m_NumBone; i++)
-	{
-		m_cBufferFrequently.boneTransform[i] = XMLoadFloat4x4(&gfx.model.Transforms[i]);
-	}
+	gfx.model.BoneTransform(runningTime, gfx.model.Transforms);
 
-	this->m_pConstantBuffer->data.mat = XMMatrixTranspose(this->m_pConstantBuffer->data.mat);
-	this->m_pConstantBuffer->ApplyChanges();
+	memcpy(m_cBufferFrequently->boneTransform, gfx.model.Transforms.data(), gfx.model.Transforms.size() * sizeof(gfx.model.Transforms[0]));
 
 }
+
 void Engine::RenderFrame()
 {
 	gfx.RenderFrame();
-
-
 }
 
 Engine& Engine::Get()
