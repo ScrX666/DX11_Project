@@ -12,6 +12,8 @@ private:
 	ID3D11DeviceContext* deviceContext = nullptr;
 
 public:
+
+
 	ConstantBuffer(){}
 	T data;
 	ID3D11Buffer* Get()const

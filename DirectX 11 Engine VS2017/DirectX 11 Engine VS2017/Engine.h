@@ -33,10 +33,10 @@ public:
 
 private:
 	Timer timer;
-
+	Camera camera;
 	CBufferReFreashFrequently m_cBufferFrequently;
 
-	std::shared_ptr<Camera> m_pCamera;
-
 	ConstantBuffer<CB_VS_vertexshader> *m_pConstantBuffer;
+	Microsoft::WRL::ComPtr<ID3D11Device> m_pd3dDevice;
+	Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_pd3dImmediateContext;
 };

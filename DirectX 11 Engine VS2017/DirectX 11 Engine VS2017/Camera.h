@@ -8,6 +8,7 @@ public:
 	Camera();
 	void SetProjectionValues(float fovDegrees, float aspectRatio, float nearZ, float farZ);
 	const XMMATRIX& GetViewMatrix()const;
+	const XMMATRIX& GetWorldMatrix() const;
 	const XMMATRIX& GetProjectionMatrix()const;
 
 	const XMVECTOR& GetPositionVector() const;
@@ -40,6 +41,7 @@ private:
 	XMFLOAT3 pos;
 	XMFLOAT3 rot;
 	XMMATRIX viewMatrix;
+	XMMATRIX worldMatrix;
 	XMMATRIX projectionMatrix;
 
 	const XMVECTOR DEFAULT_FORWARD_VECTOR = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);

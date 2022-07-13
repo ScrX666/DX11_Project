@@ -1,4 +1,4 @@
-cbuffer SkinningTransforms
+cbuffer SkinningTransforms : register(b0)
 {
     matrix WorldMatrix;
     matrix ViewProjMatrix;
@@ -12,10 +12,10 @@ SamplerState LinearSampler : register(s0);
 struct VS_INPUT
 {
     float3 position : POSITION;
-    int4 bone : BONEIDS;
+    int4 bone : BONEINDICES;
     float4 weights : BONEWEIGHTS;
     float3 normal : NORMAL;
-    float2 tex : TEXC00RDS;
+    float2 tex : TEXCOORD;
 };
 struct VS_OUTPUT
 {

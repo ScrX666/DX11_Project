@@ -18,6 +18,10 @@ const XMMATRIX & Camera::GetViewMatrix()const
 {
 	return this->viewMatrix;
 }
+const XMMATRIX& Camera::GetWorldMatrix()const
+{
+	return this->worldMatrix;
+}
 const XMMATRIX & Camera::GetProjectionMatrix()const
 {
 	return this->projectionMatrix;
