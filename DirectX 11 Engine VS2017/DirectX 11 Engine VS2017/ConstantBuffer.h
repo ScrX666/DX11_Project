@@ -35,7 +35,7 @@ public:
 		desc.MiscFlags = 0;
 		desc.ByteWidth = static_cast<UINT>(sizeof(T) + (16 - (sizeof(T) % 16))); //must be 16 bits
 		desc.StructureByteStride = 0;
-
+		
 		HRESULT hr = device->CreateBuffer(&desc, 0, buffer.GetAddressOf());
 		return hr;
 	}

@@ -3,5 +3,8 @@
 
 struct CB_VS_vertexshader
 {
-	DirectX::XMMATRIX mat;
+	DirectX::XMMATRIX worldMat;
+	DirectX::XMMATRIX MVPMat;
+	DirectX::XMMATRIX transfomMat[6];
+
 };

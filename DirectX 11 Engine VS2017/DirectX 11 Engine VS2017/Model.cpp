@@ -55,6 +55,10 @@ std::vector<VertexBoneData> vertex_to_bones;
 std::vector<int> mesh_base_vertex;
 std::map<std::string, UINT> bone_name_to_index_map;
 
+
+
+
+
 Model::Model(ID3D11Device* dev)
 {
 	m_pdev = dev;
@@ -228,14 +232,19 @@ void Model::SetTexture(ID3D11ShaderResourceView* texture)
 
 
 
-void Model::Draw(const XMMATRIX& viewProjectionMatrix)
+void Model::Draw(const XMMATRIX& viewProjectionMatrix, ID3D11DeviceContext* deviceContext)
 {
-	this->cb_vs_vertexshader -> data.mat = this->worldMatrix * viewProjectionMatrix;
-	this->cb_vs_vertexshader -> data.mat = XMMatrixTranspose(this->cb_vs_vertexshader->data.mat);
+	//this->cb_vs_vertexshader->data.worldMat = this->worldMatrix;
+	//this->cb_vs_vertexshader->data.MVPMat = viewProjectionMatrix;
+	this->cb_vs_vertexshader->data.worldMat = this->worldMatrix;
+	this->cb_vs_vertexshader->data.MVPMat = viewProjectionMatrix;
+
+	this->cb_vs_vertexshader->data.MVPMat = XMMatrixTranspose(this->cb_vs_vertexshader->data.MVPMat);
+	
 	this->cb_vs_vertexshader -> ApplyChanges();
 
-	this->deviceContext->VSSetConstantBuffers(0, 1, this->cb_vs_vertexshader->GetAddressOf());
-	this->deviceContext->PSSetShaderResources(0, 1, &this->texture);//set to pixel shader
+	deviceContext->VSSetConstantBuffers(0, 1, this->cb_vs_vertexshader->GetAddressOf());
+	deviceContext->PSSetShaderResources(0, 1, &this->texture);//set to pixel shader
 	
 	for (int i = 0; i < meshes.size(); i++)
 	{
@@ -431,16 +440,13 @@ void Model::UpdateWorldMatrix()
 //**************************************************
 //**************************************************
 
+
 void Model::Mesh2::Draw2(ID3D11DeviceContext* deviceContext,
 	ID3D11InputLayout* inputLayout,
 	ID3D11VertexShader* vShader,
 	ID3D11PixelShader* pShader,
 	UINT meshOffset,
-	Model* g,
-	ID3D11Buffer* const* cBufferFrequently,
-	ID3D11Buffer* const* cBufferRarely,
-	ID3D11Buffer* const* cBufferOnResize,
-	ID3D11Buffer* const* cBufferInstance
+	Model* g
 )
 {
 
@@ -455,25 +461,9 @@ void Model::Mesh2::Draw2(ID3D11DeviceContext* deviceContext,
 	//	}
 	//}
 
-
-	deviceContext->IASetVertexBuffers(0, 1, g->m_pVerticesArray[meshOffset].GetAddressOf(),
-		&g->mMeshTable[meshOffset].mVertexStride, &offset);
-
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	deviceContext->IASetInputLayout(inputLayout);
-	deviceContext->VSSetShader(vShader, nullptr, 0);
-	deviceContext->IASetIndexBuffer(g->m_pIndicesArray[meshOffset].Get(), DXGI_FORMAT_R32_UINT, 0);
-	deviceContext->VSSetConstantBuffers(0, 1, cBufferFrequently);
-	deviceContext->VSSetConstantBuffers(0, 1, cBufferOnResize);
-	if (cBufferInstance)
-	{
-		deviceContext->VSSetConstantBuffers(0, 1, cBufferInstance);
-	}
-
-	deviceContext->PSSetShader(pShader, nullptr, 0);
-	deviceContext->PSSetConstantBuffers(0, 1, cBufferRarely);
-	//deviceContext->DrawIndexed(g->mMeshTable[meshOffset].FaceCount * 3, 0, 0);
-
+	deviceContext->VSSetConstantBuffers(0, 1, this->cb_vs_vertexshader->GetAddressOf());
+	//UINT offset = 0;
+	//deviceContext->DrawIndexed(this->indexbuffer.BufferSize(), 0, 0);
 
 
 }
@@ -481,18 +471,13 @@ void Model::Mesh2::Draw2(ID3D11DeviceContext* deviceContext,
 void Model::DrawAllMesh(ID3D11DeviceContext* deviceContext,
 	ID3D11InputLayout* inputLayout,
 	ID3D11VertexShader* vShader,
-	ID3D11PixelShader* pShader,
-	ID3D11Buffer* const* cBufferFrequently,
-	ID3D11Buffer* const* cBufferRarely,
-	ID3D11Buffer* const* cBufferOnResize,
-	ID3D11Buffer* const* cBufferInstance)
+	ID3D11PixelShader* pShader
+	)
 {
 	for (int i = 0; i < mMeshTable.size(); i++)
 	{
-		mMeshTable[i].Draw2(deviceContext, inputLayout, vShader, pShader, i, this,
-			cBufferFrequently, cBufferRarely, cBufferOnResize, cBufferInstance);
+		//mMeshTable[i].Draw2(deviceContext, inputLayout, vShader, pShader,i,this);
 	}
-	//mMeshTable[1].Draw(deviceContext, inputLayout, vShader, pShader,1,this, cBufferFrequently, cBufferRarely, cBufferOnResize);
 
 
 }

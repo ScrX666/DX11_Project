@@ -13,6 +13,9 @@ using namespace DirectX;
 #define NUM_BONE_PER_MESH 100
 using namespace std;
 using namespace Assimp;
+
+
+
 class Model
 {
 public:
@@ -23,7 +26,7 @@ public:
 
 	bool Initialize(const std::string &filePath, ID3D11Device* device, ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView*texture, ConstantBuffer<CB_VS_vertexshader>* cb_vs_vertexshader);
 	void SetTexture(ID3D11ShaderResourceView* texture);
-	void Draw(const XMMATRIX& viewProjectionMatrix);
+	void Draw(const XMMATRIX& viewProjectionMatrix, ID3D11DeviceContext* deviceContext);
 private:
 	std::vector<Mesh> meshes;
 	bool LoadModel(const std::string& filePath);
@@ -63,6 +66,7 @@ public:
 
 	class Mesh2
 	{
+
 	public:
 		UINT Id;
 		UINT VertexStart;
@@ -88,7 +92,6 @@ public:
 
 		ConstantBuffer<CB_VS_vertexshader>* cb_vs_vertexshader = nullptr;
 
-
 	public:
 		Mesh2() :Id(-1), VertexStart(0), VertexCount(0), FaceStart(0), FaceCount(0),
 			mIndexBufferFormat(DXGI_FORMAT_R32_UINT), mVertexStride(sizeof(SkinnedVertexIn))
@@ -110,11 +113,7 @@ public:
 			ID3D11VertexShader* vShader,
 			ID3D11PixelShader* pShader,
 			UINT meshOffset,
-			Model* g,
-			ID3D11Buffer* const* cBufferFrequently,
-			ID3D11Buffer* const* cBufferRarely,
-			ID3D11Buffer* const* cBufferOnResize,
-			ID3D11Buffer* const* cBufferInstance
+			Model* g
 		);
 
 	};
@@ -127,7 +126,8 @@ public:
 	ID3D11ShaderResourceView* texture = nullptr;
 
 
-	XMMATRIX worldMatrix = XMMatrixIdentity();
+	XMMATRIX worldMatrix = XMMatrixIdentity(); 
+	XMMATRIX viewMatrix = XMMatrixIdentity();
 
 private:
 
@@ -137,22 +137,22 @@ private:
 public:
 	void LoadMesh(std::string filePath);
 	bool LoadMeshWithSkinnedAnimation(std::string filePath);
+
 	void DrawAllMesh(ID3D11DeviceContext* deviceContext,
 		ID3D11InputLayout* inputLayout,
 		ID3D11VertexShader* vShader,
-		ID3D11PixelShader* pShader,
-		ID3D11Buffer* const* cBufferFrequently,
-		ID3D11Buffer* const* cBufferRarely,
-		ID3D11Buffer* const* cBufferOnResize,
-		ID3D11Buffer* const* cBufferInstance);
+		ID3D11PixelShader* pShader);
 
 private:
 	Model(const Model& rhs);
 	Model& operator=(const Model& rhs);
-
+private:
+	VertexBuffer<Vertex> vertexbuffer;
+	IndexBuffer indexbuffer;
 
 public:
 	Model() = default;
+	Model(ID3D11Device* device, ID3D11DeviceContext* deviceContext, std::vector<Vertex>& vertices, std::vector<DWORD>& indices);
 	Model(ID3D11Device* dev);
 	~Model();
 

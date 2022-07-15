@@ -21,6 +21,11 @@ bool Engine::Initialize( HINSTANCE hInstance, std::string window_title, std::str
 
 	gfx.model.Transforms.resize(gfx.model.m_NumBone);
 	gfx.model.BoneTransform(0.0f, gfx.model.Transforms);;
+	for (UINT i = 0; i < gfx.model.m_NumBone; i++)
+	{
+		m_cBufferFrequently.data.transfomMat[i] = XMLoadFloat4x4(&gfx.model.Transforms[i]);
+	}
+
 
 
 	return true;
@@ -98,6 +103,7 @@ void Engine::Update()
 
 	
 	//**************************
+	vector<XMFLOAT4X4> arBoneMatrixs;
 	
 	
 	float runningTime = 1;//timer.TotalTime();
@@ -106,10 +112,18 @@ void Engine::Update()
 	float currentFrames = runningTime / perFrameTime;
 
 	//calculate bone animation
-	gfx.model.BoneTransform(runningTime, gfx.model.Transforms);
+	gfx.model.BoneTransform(runningTime, arBoneMatrixs);
 	
-	//CopyMemory(m_cBufferFrequently->boneTransform, gfx.model.Transforms.data(), gfx.model.Transforms.size() * sizeof(gfx.model.Transforms[0]));
+	for (UINT i = 0; i < gfx.model.m_NumBone; i++)
+	{
 
+		XMMATRIX XmTransforms = XMLoadFloat4x4(&gfx.model.Transforms[i]);
+		//XmTransforms = XMMatrixTranspose(XmTransforms);
+		gfx.model.cb_vs_vertexshader->data.transfomMat[i] = XmTransforms;
+		
+	}
+	//CopyMemory(m_cBufferFrequently.data.transfomMat, arBoneMatrixs.data(), arBoneMatrixs.size() * sizeof(arBoneMatrixs[0]));
+	
 }
  
 

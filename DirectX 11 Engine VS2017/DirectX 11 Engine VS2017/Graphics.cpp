@@ -49,11 +49,9 @@ void Graphics::RenderFrame()
 		//camera.SetRotation(0.0f, 1.0f, 0.0f);
 		//camera.AdjustRotation(0.0f, 0.01f, 0.0f);
 		//camera.SetLookAtPos(XMFLOAT3(0.0f, 0.0f, 0.0f));
-		this->model.Draw(camera.GetViewMatrix() * camera.GetProjectionMatrix());
-		this->model.DrawAllMesh(deviceContext.Get(), inputLayout.Get(), vertexShader.GetShader(), pixelShader.GetShader(), cb_vs_vertexshader.GetAddressOf(), cb_vs_vertexshader.GetAddressOf(), cb_vs_vertexshader.GetAddressOf(), cb_vs_vertexshader.GetAddressOf());
+		this->model.Draw(camera.GetViewMatrix() * camera.GetProjectionMatrix(), deviceContext.Get());
+		this->model.DrawAllMesh(deviceContext.Get(), inputLayout.Get(), vertexShader.GetShader(), pixelShader.GetShader());
 
-		//this->mesh.DrawAllMesh(deviceContext.Get(),inputLayout.Get(), vertexShader.GetShader(), pixelShader.GetShader(), cb_vs_vertexshader.GetAddressOf(), cb_vs_vertexshader.GetAddressOf(), cb_vs_vertexshader.GetAddressOf(), cb_vs_vertexshader.GetAddressOf());
-		
 	}
 
 	//Draw Text
@@ -249,9 +247,9 @@ bool Graphics::InitializeShader()
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{ 
 	"POSITION", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0 ,
-	"BONEINDICES",  0, DXGI_FORMAT_R8G8B8A8_UINT,   0, 60, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0,
-	"BONEWEIGHTS",      0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 48, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0,
-	"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0 ,
+	"BONEINDICES",  0, DXGI_FORMAT_R8G8B8A8_UINT,   0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0,
+	"BONEWEIGHTS",      0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0,
+	"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0 ,
 	"TEXCOORD", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0 ,
 	
 	};
@@ -271,14 +269,6 @@ bool Graphics::InitializeShader()
 
 bool Graphics::InitializeScene()
 {
-	//Red
-	//Vertex
-
-	//Load Vertex Buffer
-
-
-
-	//Load Index buffer
 
 
 	//Load texture from file
@@ -306,12 +296,12 @@ bool Graphics::InitializeScene()
 
 	bool initializeModelSuccessfully = model.Initialize("..\\DirectX 11 Engine VS2017\\Data\\xxx.fbx", device.Get(), deviceContext.Get(), myTexture.Get(), &cb_vs_vertexshader);
 	model.LoadMeshWithSkinnedAnimation("..\\DirectX 11 Engine VS2017\\Data\\xxx.fbx");
-	if (!initializeModelSuccessfully)
-	{
-		ErrorLogger::Log(hr, "Failed to Initialize model. ");
-		
-		return false;
-	}
+	//if (!initializeModelSuccessfully)
+	//{
+	//	ErrorLogger::Log(hr, "Failed to Initialize model. ");
+	//	
+	//	return false;
+	//}
 
 
 
@@ -320,7 +310,7 @@ bool Graphics::InitializeScene()
 	spriteBatch = std::make_unique<DirectX::SpriteBatch>(this->deviceContext.Get());
 	spriteFont = std::make_unique<DirectX::SpriteFont>(this->device.Get(), L"..\\DirectX 11 Engine VS2017\\Data\\myFont.spritefont");
 
-	camera.SetPosition(0.0f, 0.0f, -5.0f);
+	camera.SetPosition(0.0f, 0.0f, 0.0f);
 	camera.SetProjectionValues(90.0f, static_cast<float>(this->windowWidth) / static_cast<float>(this->windowHeight), 0.1f, 1000.0f);
 
 	return true;
