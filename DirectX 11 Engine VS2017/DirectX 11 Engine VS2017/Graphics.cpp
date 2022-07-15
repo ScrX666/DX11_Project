@@ -295,7 +295,7 @@ bool Graphics::InitializeScene()
 	model.cb_vs_vertexshader = &cb_vs_vertexshader;
 
 	bool initializeModelSuccessfully = model.Initialize("..\\DirectX 11 Engine VS2017\\Data\\xxx.fbx", device.Get(), deviceContext.Get(), myTexture.Get(), &cb_vs_vertexshader);
-	model.LoadMeshWithSkinnedAnimation("..\\DirectX 11 Engine VS2017\\Data\\xxx.fbx");
+	//model.LoadMeshWithSkinnedAnimation("..\\DirectX 11 Engine VS2017\\Data\\xxx.fbx");
 	//if (!initializeModelSuccessfully)
 	//{
 	//	ErrorLogger::Log(hr, "Failed to Initialize model. ");
