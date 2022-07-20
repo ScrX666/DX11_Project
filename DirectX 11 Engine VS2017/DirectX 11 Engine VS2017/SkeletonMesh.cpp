@@ -627,7 +627,7 @@ void SkeletonMesh::Draw(ID3D11DeviceContext* in_deviceContext,ID3D11InputLayout*
 	UINT offset = 0;
 	//in_deviceContext->IASetVertexBuffers(0, 1, m_vertexBuffers[0].GetAddressOf(), &m_meshTable[0]->m_vertexStride, &offset);
 	//in_deviceContext->IASetIndexBuffer(m_indexBuffers[0].Get(), DXGI_FORMAT_R32_UINT, offset);
-	in_deviceContext->DrawIndexed(m_meshTable[0]->m_faceCount * 3, 0, 0);
+	in_deviceContext->DrawIndexed(m_meshTable[1]->m_faceCount * 3, 0, 0);
 	
 }
 
