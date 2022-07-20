@@ -152,91 +152,51 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AdapterReader.cpp" />
-    <None Include="C:\Users\Administrator\Desktop\DirectX12Lab-master\DirectX12Lab-master\DX12Lab\Source\pch.cpp" />
     <ClCompile Include="Camera.cpp" />
-    <None Include="Common\d3dUtil.cpp" />
-    <None Include="Common\DDSTextureLoader.cpp" />
-    <None Include="Common\GameTimer.cpp" />
-    <None Include="Common\GeometryGenerator.cpp" />
-    <None Include="Common\MathHelper.cpp" />
-    <None Include="Common\RenderCore.cpp" />
-    <None Include="Common\RenderTarget.cpp" />
-    <None Include="Common\Texture2D.cpp" />
-    <None Include="Core.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="ErrorLogger.cpp" />
-    <None Include="FMathLib.cpp" />
-    <None Include="FrameResource.cpp" />
+    <ClCompile Include="GeometryRenderObject.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="KeyboardClass.cpp" />
     <ClCompile Include="KeyboardEvents.cpp" />
-    <None Include="LightHelper.cpp" />
-    <None Include="MathHelper.cpp" />
     <ClCompile Include="Mesh.cpp" />
-    <None Include="MeshGeometry.cpp" />
-    <ClCompile Include="Model.cpp" />
+    <Text Include="Model.cpp" />
     <ClCompile Include="MouseClass.cpp" />
     <ClCompile Include="MouseEvent.cpp" />
     <ClCompile Include="RenderWindow.cpp" />
-    <None Include="Shader.cpp" />
     <ClCompile Include="Shaders.cpp" />
-    <None Include="SkinData.cpp" />
-    <None Include="SkinMesh.cpp" />
-    <None Include="SkinnedModel.cpp" />
+    <ClCompile Include="SkeletonMesh.cpp" />
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="StaticMesh.cpp" />
     <ClCompile Include="StringConverter.cpp" />
-    <None Include="StringHelper.cpp" />
     <ClCompile Include="Timer.cpp" />
-    <None Include="VS.cpp" />
     <ClCompile Include="WindowContainer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AdapterReader.h" />
-    <None Include="Animation.h" />
-    <None Include="C:\Users\Administrator\Desktop\DirectX12Lab-master\DirectX12Lab-master\DX12Lab\Source\pch.h" />
     <None Include="BasicModel.h" />
     <ClInclude Include="Camera.h" />
-    <None Include="Common\d3dUtil.h" />
-    <None Include="Common\d3dx12.h" />
-    <None Include="Common\DDSTextureLoader.h" />
-    <None Include="Common\GameTimer.h" />
-    <None Include="Common\GeometryGenerator.h" />
-    <None Include="Common\MathHelper.h" />
-    <None Include="Common\RenderCore.h" />
-    <None Include="Common\RenderTarget.h" />
-    <None Include="Common\Texture2D.h" />
-    <None Include="Common\UploadBuffer.h" />
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="ConstantBufferTypes.h" />
-    <None Include="Core.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="ErrorLogger.h" />
-    <None Include="FMathLib.h" />
-    <None Include="FrameResource.h" />
+    <ClInclude Include="GeometryRenderObject.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="indexBuffer.h" />
     <ClInclude Include="KeyboardClass.h" />
     <ClInclude Include="KeyboardEvents.h" />
-    <None Include="LightHelper.h" />
-    <None Include="LoadM3d.h" />
-    <None Include="MathHelper.h" />
     <ClInclude Include="Mesh.h" />
-    <None Include="MeshGeometry.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="MouseClass.h" />
     <ClInclude Include="MouseEvent.h" />
     <ClInclude Include="RenderWindow.h" />
-    <None Include="Shader.h" />
     <ClInclude Include="Shaders.h" />
-    <None Include="SkinData.h" />
-    <None Include="SkinMesh.h" />
-    <None Include="SkinnedModel.h" />
+    <ClInclude Include="SkeletonMesh.h" />
+    <ClInclude Include="StaticMesh.h" />
     <ClInclude Include="StringConverter.h" />
-    <None Include="StringHelper.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="VertexBuffer.h" />
-    <None Include="VS.h" />
     <ClInclude Include="WindowContainer.h" />
   </ItemGroup>
   <ItemGroup>
@@ -278,7 +238,6 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Common\FMathLib.inl" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

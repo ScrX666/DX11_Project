@@ -22,11 +22,8 @@
     <Filter Include="Header Files\Mouse">
       <UniqueIdentifier>{1c1c757d-fee6-4a94-9720-2f3cac1826a8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Common">
-      <UniqueIdentifier>{8705c703-f714-4cc5-9fb1-cf26f71fd6e6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Common\useful">
-      <UniqueIdentifier>{4dc46a15-4d59-44e7-8cfd-eda31cf7d3f0}</UniqueIdentifier>
+    <Filter Include="Tree">
+      <UniqueIdentifier>{f67f5011-2734-4730-8740-2152ee2c0f52}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -60,9 +57,6 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Model.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="KeyboardClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -80,6 +74,15 @@
     </ClCompile>
     <ClCompile Include="Timer.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticMesh.cpp">
+      <Filter>Tree</Filter>
+    </ClCompile>
+    <ClCompile Include="GeometryRenderObject.cpp">
+      <Filter>Tree</Filter>
+    </ClCompile>
+    <ClCompile Include="SkeletonMesh.cpp">
+      <Filter>Tree</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -146,6 +149,15 @@
     <ClInclude Include="Timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="StaticMesh.h">
+      <Filter>Tree</Filter>
+    </ClInclude>
+    <ClInclude Include="GeometryRenderObject.h">
+      <Filter>Tree</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletonMesh.h">
+      <Filter>Tree</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl">
@@ -163,149 +175,13 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Common\FMathLib.inl">
-      <Filter>Common</Filter>
-    </None>
-    <None Include="Core.cpp">
-      <Filter>Common\useful</Filter>
-    </None>
-    <None Include="Core.h">
-      <Filter>Common\useful</Filter>
-    </None>
-    <None Include="Common\d3dUtil.cpp">
-      <Filter>Common\useful</Filter>
-    </None>
-    <None Include="Common\d3dUtil.h">
-      <Filter>Common\useful</Filter>
-    </None>
-    <None Include="Common\d3dx12.h">
-      <Filter>Common\useful</Filter>
-    </None>
-    <None Include="Common\DDSTextureLoader.cpp">
-      <Filter>Common\useful</Filter>
-    </None>
-    <None Include="Common\DDSTextureLoader.h">
-      <Filter>Common\useful</Filter>
-    </None>
-    <None Include="FrameResource.cpp">
-      <Filter>Common\useful</Filter>
-    </None>
-    <None Include="FrameResource.h">
-      <Filter>Common\useful</Filter>
-    </None>
-    <None Include="Common\GameTimer.cpp">
-      <Filter>Common\useful</Filter>
-    </None>
-    <None Include="Common\GameTimer.h">
-      <Filter>Common\useful</Filter>
-    </None>
-    <None Include="Common\GeometryGenerator.cpp">
-      <Filter>Common\useful</Filter>
-    </None>
-    <None Include="Common\GeometryGenerator.h">
-      <Filter>Common\useful</Filter>
-    </None>
-    <None Include="Common\MathHelper.cpp">
-      <Filter>Common\useful</Filter>
-    </None>
-    <None Include="Common\MathHelper.h">
-      <Filter>Common\useful</Filter>
-    </None>
-    <None Include="Common\RenderCore.cpp">
-      <Filter>Common\useful</Filter>
-    </None>
-    <None Include="Common\RenderCore.h">
-      <Filter>Common\useful</Filter>
-    </None>
-    <None Include="Common\RenderTarget.cpp">
-      <Filter>Common\useful</Filter>
-    </None>
-    <None Include="Common\RenderTarget.h">
-      <Filter>Common\useful</Filter>
-    </None>
-    <None Include="StringHelper.cpp">
-      <Filter>Common\useful</Filter>
-    </None>
-    <None Include="StringHelper.h">
-      <Filter>Common\useful</Filter>
-    </None>
-    <None Include="Common\Texture2D.cpp">
-      <Filter>Common\useful</Filter>
-    </None>
-    <None Include="Common\Texture2D.h">
-      <Filter>Common\useful</Filter>
-    </None>
-    <None Include="Common\UploadBuffer.h">
-      <Filter>Common\useful</Filter>
-    </None>
-    <None Include="Animation.h">
-      <Filter>Common</Filter>
-    </None>
-    <None Include="FMathLib.cpp">
-      <Filter>Common</Filter>
-    </None>
-    <None Include="FMathLib.h">
-      <Filter>Common</Filter>
-    </None>
-    <None Include="LightHelper.cpp">
-      <Filter>Common</Filter>
-    </None>
-    <None Include="LightHelper.h">
-      <Filter>Common</Filter>
-    </None>
-    <None Include="LoadM3d.h">
-      <Filter>Common</Filter>
-    </None>
-    <None Include="MathHelper.cpp">
-      <Filter>Common</Filter>
-    </None>
-    <None Include="MathHelper.h">
-      <Filter>Common</Filter>
-    </None>
-    <None Include="MeshGeometry.cpp">
-      <Filter>Common</Filter>
-    </None>
-    <None Include="MeshGeometry.h">
-      <Filter>Common</Filter>
-    </None>
-    <None Include="C:\Users\Administrator\Desktop\DirectX12Lab-master\DirectX12Lab-master\DX12Lab\Source\pch.cpp">
-      <Filter>Common</Filter>
-    </None>
-    <None Include="C:\Users\Administrator\Desktop\DirectX12Lab-master\DirectX12Lab-master\DX12Lab\Source\pch.h">
-      <Filter>Common</Filter>
-    </None>
-    <None Include="Shader.cpp">
-      <Filter>Common</Filter>
-    </None>
-    <None Include="Shader.h">
-      <Filter>Common</Filter>
-    </None>
-    <None Include="SkinData.cpp">
-      <Filter>Common</Filter>
-    </None>
-    <None Include="SkinData.h">
-      <Filter>Common</Filter>
-    </None>
-    <None Include="SkinMesh.cpp">
-      <Filter>Common</Filter>
-    </None>
-    <None Include="SkinMesh.h">
-      <Filter>Common</Filter>
-    </None>
-    <None Include="SkinnedModel.cpp">
-      <Filter>Common</Filter>
-    </None>
-    <None Include="SkinnedModel.h">
-      <Filter>Common</Filter>
-    </None>
-    <None Include="VS.cpp">
-      <Filter>Common</Filter>
-    </None>
-    <None Include="VS.h">
-      <Filter>Common</Filter>
-    </None>
     <None Include="BasicModel.h">
       <Filter>Header Files</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Model.cpp">
+      <Filter>Source Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>

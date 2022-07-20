@@ -28,6 +28,6 @@ private:
 	Timer timer;
 	Camera camera;
 	//ConstantBuffer <CBufferReFreashFrequently> m_cBufferFrequently;
-	ConstantBuffer <CB_VS_vertexshader> m_cBufferFrequently;
+	ConstantBuffer <ContantBuffer_VS> m_cBufferFrequently;
 	
 };

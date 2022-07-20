@@ -1,10 +1,10 @@
 #pragma once
 #include<DirectXMath.h>
 
-struct CB_VS_vertexshader
+struct ContantBuffer_VS
 {
 	DirectX::XMMATRIX worldMat;
-	DirectX::XMMATRIX MVPMat;
+	DirectX::XMMATRIX VPMat;
 	DirectX::XMMATRIX transfomMat[6];
 
 };

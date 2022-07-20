@@ -48,10 +48,12 @@ void Graphics::RenderFrame()
 	{
 		//camera.SetRotation(0.0f, 1.0f, 0.0f);
 		//camera.AdjustRotation(0.0f, 0.01f, 0.0f);
-		//camera.SetLookAtPos(XMFLOAT3(0.0f, 0.0f, 0.0f));
-		this->model.Draw(camera.GetViewMatrix() * camera.GetProjectionMatrix(), deviceContext.Get());
-		this->model.DrawAllMesh(deviceContext.Get(), inputLayout.Get(), vertexShader.GetShader(), pixelShader.GetShader());
-
+		////camera.SetLookAtPos(XMFLOAT3(0.0f, 0.0f, 0.0f));
+		//this->model.DrawMVP(camera.GetViewMatrix() * camera.GetProjectionMatrix(), deviceContext.Get());
+		staMesh.SetConstantBuffer(camera.GetViewMatrix() * camera.GetProjectionMatrix());
+		//staMesh.Draw();
+		skeletonMesh.DrawAllMesh(deviceContext.Get(), inputLayout.Get(), vertexShader.GetShader(), pixelShader.GetShader());
+		
 	}
 
 	//Draw Text
@@ -108,7 +110,7 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 		adapters[0].pAdapter, D3D_DRIVER_TYPE_UNKNOWN,
 		NULL, NULL, NULL, 0, D3D11_SDK_VERSION,
 		&scd, this->swapChain.GetAddressOf(),
-		this->device.GetAddressOf(),NULL,
+		this->m_device.GetAddressOf(),NULL,
 		this->deviceContext.GetAddressOf()
 	);
 
@@ -126,7 +128,7 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 		return false;
 	}
 
-	hr = this->device->CreateRenderTargetView(backBuffer.Get(), NULL, this->renderTargetView.GetAddressOf());
+	hr = this->m_device->CreateRenderTargetView(backBuffer.Get(), NULL, this->renderTargetView.GetAddressOf());
 	if (FAILED(hr))
 	{
 		ErrorLogger::Log(hr, "Failed to Create Render Target View");
@@ -147,13 +149,13 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 	depthStencilDesc.CPUAccessFlags = 0;
 	depthStencilDesc.MiscFlags = 0;
 	 
-	hr = device->CreateTexture2D(&depthStencilDesc, NULL, this->depthStencilBuffer.GetAddressOf());
+	hr = m_device->CreateTexture2D(&depthStencilDesc, NULL, this->depthStencilBuffer.GetAddressOf());
 	if (FAILED(hr))
 	{
 		ErrorLogger::Log(hr, "Failed to create depth stencil buffer");
 		return false;
 	}
-	hr = device->CreateDepthStencilView(depthStencilBuffer.Get(), NULL, this->depthStencilView.GetAddressOf());
+	hr = m_device->CreateDepthStencilView(depthStencilBuffer.Get(), NULL, this->depthStencilView.GetAddressOf());
 	if (FAILED(hr))
 	{
 		ErrorLogger::Log(hr, "Failed to create depth stencil view");
@@ -171,7 +173,7 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 	depthstencildesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK::D3D11_DEPTH_WRITE_MASK_ALL;
 	depthstencildesc.DepthFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_LESS_EQUAL;
 
-	hr = device->CreateDepthStencilState(&depthstencildesc, this->depthStencilState.GetAddressOf());
+	hr = m_device->CreateDepthStencilState(&depthstencildesc, this->depthStencilState.GetAddressOf());
 	if (FAILED(hr))
 	{
 		ErrorLogger::Log(hr, "Failed to create depth stencil state");
@@ -202,7 +204,7 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 	// change rasterizer to counter clockwise
 	//rasterizerDesc.FrontCounterClockwise = TRUE;
 
-	hr = device->CreateRasterizerState(&rasterizerDesc, rasterizerState.GetAddressOf());
+	hr = m_device->CreateRasterizerState(&rasterizerDesc, rasterizerState.GetAddressOf());
 	if (FAILED(hr))
 	{
 		ErrorLogger::Log(hr, "Failed to create rasterizer state.");
@@ -219,7 +221,7 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 	samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 	samplerDesc.MinLOD = 0;
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-	hr = device->CreateSamplerState(&samplerDesc, samplerState.GetAddressOf());
+	hr = m_device->CreateSamplerState(&samplerDesc, samplerState.GetAddressOf());
 	if (FAILED(hr))
 	{
 		ErrorLogger::Log(hr, "Failed to create sampler state.");
@@ -235,11 +237,11 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 
 bool Graphics::InitializeShader()
 {
-	if (!vertexShader.Initialize(device, L"..\\x64\\Debug\\SkinVS.cso"))//SkinVS.cso
+	if (!vertexShader.Initialize(m_device, L"..\\x64\\Debug\\SkinVS.cso"))//SkinVS.cso
 	{
 		return false;
 	}
-	if (!pixelShader.Initialize(device, L"..\\x64\\Debug\\PixelShader.cso"))
+	if (!pixelShader.Initialize(m_device, L"..\\x64\\Debug\\PixelShader.cso"))
 	{
 		return false;
 	}
@@ -257,7 +259,7 @@ bool Graphics::InitializeShader()
 
 	UINT numElements = ARRAYSIZE(layout);
 
-	HRESULT hr = this->device->CreateInputLayout(layout, numElements, vertexShader.GetBuffer()->GetBufferPointer(), vertexShader.GetBuffer()->GetBufferSize(), this->inputLayout.GetAddressOf());
+	HRESULT hr = this->m_device->CreateInputLayout(layout, numElements, vertexShader.GetBuffer()->GetBufferPointer(), vertexShader.GetBuffer()->GetBufferSize(), this->inputLayout.GetAddressOf());
 	
 	if (FAILED(hr))
 	{
@@ -270,9 +272,8 @@ bool Graphics::InitializeShader()
 bool Graphics::InitializeScene()
 {
 
-
 	//Load texture from file
-	HRESULT hr = DirectX::CreateWICTextureFromFile(device.Get(), L"..\\DirectX 11 Engine VS2017\\Texture\\uv_test.png", NULL, myTexture.GetAddressOf());
+	HRESULT hr = DirectX::CreateWICTextureFromFile(m_device.Get(), L"..\\DirectX 11 Engine VS2017\\Texture\\uv_test.png", NULL, myTexture.GetAddressOf());
 	if (FAILED(hr))
 	{
 		ErrorLogger::Log(hr, "Failed to create wic texture from file. ");
@@ -281,21 +282,24 @@ bool Graphics::InitializeScene()
 
 	//Initialize constant buffer
 
-	hr = this->cb_vs_vertexshader.Initialize(this->device.Get(), this->deviceContext.Get());
+	hr = this->cb_vs_vertexshader.Initialize(this->m_device.Get(), this->deviceContext.Get());
 	if (FAILED(hr))
 	{
 		ErrorLogger::Log(hr, "Failed to create constant buffer. ");
 		return false;
 	}
+
 	
+
 	//Initialize Model
 	//bool initializeModelSuccessfully = model.Initialize("..\\DirectX 11 Engine VS2017\\Data\\xxx.fbx", this->device.Get(), this->deviceContext.Get(), this->myTexture.Get(), &cb_vs_vertexshader);
+	//model = model();
 
-	model.m_pdev = this->device.Get();
-	model.cb_vs_vertexshader = &cb_vs_vertexshader;
 
-	bool initializeModelSuccessfully = model.Initialize("..\\DirectX 11 Engine VS2017\\Data\\xxx.fbx", device.Get(), deviceContext.Get(), myTexture.Get(), &cb_vs_vertexshader);
-	//model.LoadMeshWithSkinnedAnimation("..\\DirectX 11 Engine VS2017\\Data\\xxx.fbx");
+	//model.m_dev = this->m_device.Get();
+	//model.m_VSConstantBuffer = &cb_vs_vertexshader;
+	//bool initializeModelSuccessfully = model.Initialize("..\\DirectX 11 Engine VS2017\\Data\\xxx.fbx", m_device.Get(), deviceContext.Get(), myTexture.Get(), &cb_vs_vertexshader);
+	//model.LoadMeshesWithSkinnedAnimation("..\\DirectX 11 Engine VS2017\\Data\\xxx.fbx");
 	//if (!initializeModelSuccessfully)
 	//{
 	//	ErrorLogger::Log(hr, "Failed to Initialize model. ");
@@ -303,14 +307,13 @@ bool Graphics::InitializeScene()
 	//	return false;
 	//}
 
-
-
-
+	staMesh.Initialize("..\\DirectX 11 Engine VS2017\\Data\\xxx.fbx", m_device.Get(), deviceContext.Get(), myTexture.Get(), &cb_vs_vertexshader);
+	skeletonMesh.InitializeSkinModel("..\\DirectX 11 Engine VS2017\\Data\\xxx.fbx", m_device.Get());
 	//Initialize Font
 	spriteBatch = std::make_unique<DirectX::SpriteBatch>(this->deviceContext.Get());
-	spriteFont = std::make_unique<DirectX::SpriteFont>(this->device.Get(), L"..\\DirectX 11 Engine VS2017\\Data\\myFont.spritefont");
+	spriteFont = std::make_unique<DirectX::SpriteFont>(this->m_device.Get(), L"..\\DirectX 11 Engine VS2017\\Data\\myFont.spritefont");
 
-	camera.SetPosition(0.0f, 0.0f, 0.0f);
+	camera.SetPosition(0.0f, 0.0f, -5.0f);
 	camera.SetProjectionValues(90.0f, static_cast<float>(this->windowWidth) / static_cast<float>(this->windowHeight), 0.1f, 1000.0f);
 
 	return true;

@@ -11,6 +11,9 @@
 #include <SpriteFont.h>
 #include "Timer.h"
 #include"ConstantBuffer.h"
+#include "StaticMesh.h"
+#include "SkeletonMesh.h"
+
 class Graphics
 {
 public :
@@ -19,13 +22,19 @@ public :
 	bool InitializeDirectX(HWND hwnd);
 	bool InitializeShader();
 	bool InitializeScene();
+
+	ID3D11Device* GetDirectXDevice() {	return m_device.Get(); }
+
+
 	Camera camera;
 	//static Graphics *_instance;
-	 Model model;
+	StaticMesh staMesh;
+	SkeletonMesh skeletonMesh;
+	//Model model;
 private:
 	
 
-	Microsoft::WRL::ComPtr<ID3D11Device> device;
+	Microsoft::WRL::ComPtr<ID3D11Device> m_device;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> deviceContext;
 	Microsoft::WRL::ComPtr < IDXGISwapChain> swapChain;
 	Microsoft::WRL::ComPtr < ID3D11RenderTargetView> renderTargetView;
@@ -35,8 +44,9 @@ private:
 	PixelShader pixelShader;
 
 protected:
-	ConstantBuffer<CB_VS_vertexshader> cb_vs_vertexshader;
-
+	ConstantBuffer<ContantBuffer_VS> cb_vs_vertexshader;
+	VertexBuffer<Vertex> vertexbuffer;
+	IndexBuffer indexbuffer;
 	
 
 

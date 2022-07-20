@@ -19,12 +19,12 @@ bool Engine::Initialize( HINSTANCE hInstance, std::string window_title, std::str
 		return false;
 	}
 
-	gfx.model.Transforms.resize(gfx.model.m_NumBone);
-	gfx.model.BoneTransform(0.0f, gfx.model.Transforms);;
-	for (UINT i = 0; i < gfx.model.m_NumBone; i++)
-	{
-		m_cBufferFrequently.data.transfomMat[i] = XMLoadFloat4x4(&gfx.model.Transforms[i]);
-	}
+	//gfx.model.m_calculatedBoneTransforms.resize(gfx.model.m_numBones);
+	//gfx.model.BoneTransform(0.0f, gfx.model.m_calculatedBoneTransforms);;
+	//for (UINT i = 0; i < gfx.model.m_numBones; i++)
+	//{
+	//	m_cBufferFrequently.data.transfomMat[i] = XMLoadFloat4x4(&gfx.model.m_calculatedBoneTransforms[i]);
+	//}
 
 
 
@@ -103,25 +103,25 @@ void Engine::Update()
 
 	
 	//**************************
-	vector<XMFLOAT4X4> arBoneMatrixs;
-	
-	
-	float runningTime = 1;//timer.TotalTime();
+	//vector<XMFLOAT4X4> arBoneMatrixs;
+	//
+	//
+	//float runningTime = 1;//timer.TotalTime();
 
-	double perFrameTime = 1.0f / 60.0f;
-	float currentFrames = runningTime / perFrameTime;
+	//double perFrameTime = 1.0f / 60.0f;
+	//float currentFrames = runningTime / perFrameTime;
 
-	//calculate bone animation
-	gfx.model.BoneTransform(runningTime, arBoneMatrixs);
-	
-	for (UINT i = 0; i < gfx.model.m_NumBone; i++)
-	{
+	////calculate bone animation
+	//gfx.model.BoneTransform(runningTime, arBoneMatrixs);
+	//
+	//for (UINT i = 0; i < gfx.model.m_numBones; i++)
+	//{
 
-		XMMATRIX XmTransforms = XMLoadFloat4x4(&gfx.model.Transforms[i]);
-		//XmTransforms = XMMatrixTranspose(XmTransforms);
-		gfx.model.cb_vs_vertexshader->data.transfomMat[i] = XmTransforms;
-		
-	}
+	//	XMMATRIX XmTransforms = XMLoadFloat4x4(&gfx.model.m_calculatedBoneTransforms[i]);
+	//	//XmTransforms = XMMatrixTranspose(XmTransforms);
+	//	gfx.model.m_VSConstantBuffer->data.transfomMat[i] = XmTransforms;
+	//	
+	//}
 	//CopyMemory(m_cBufferFrequently.data.transfomMat, arBoneMatrixs.data(), arBoneMatrixs.size() * sizeof(arBoneMatrixs[0]));
 	
 }

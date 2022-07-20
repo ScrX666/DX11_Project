@@ -49,7 +49,7 @@ public:
 			ErrorLogger::Log(hr, "Failed to create constant buffer. ");
 			return false;
 		}
-		CopyMemory(mappedResource.pData, &data, sizeof(CB_VS_vertexshader));
+		CopyMemory(mappedResource.pData, &data, sizeof(ContantBuffer_VS));
 		this->deviceContext->Unmap(buffer.Get(), 0);
 		return true;
 	}

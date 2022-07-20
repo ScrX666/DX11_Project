@@ -236,8 +236,8 @@ void MeshGeometryClass::LoadMesh(std::string filePath)
 
 bool MeshGeometryClass::LoadMeshWithSkinnedAnimation(std::string filePath)
 {
-	m_aiscene = m_Importer.ReadFile(filePath, aiProcess_FlipUVs || aiProcess_Triangulate);
-	if (!m_aiscene || m_aiscene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !m_aiscene->mRootNode)
+	m_aiScene = m_Importer.ReadFile(filePath, aiProcess_FlipUVs || aiProcess_Triangulate);
+	if (!m_aiScene || m_aiScene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !m_aiScene->mRootNode)
 	{
 		std::cout << "读取模型出现错误: " << m_Importer.GetErrorString() << std::endl;
 		exit(-1);
@@ -247,28 +247,28 @@ bool MeshGeometryClass::LoadMeshWithSkinnedAnimation(std::string filePath)
 	static DWORD start, end;
 	static DWORD currentFace;
 	start = end = currentFace = 0;
-	aiMatrix4x4 tempGloabTransform = m_aiscene->mRootNode->mTransformation;
+	aiMatrix4x4 tempGloabTransform = m_aiScene->mRootNode->mTransformation;
 	tempGloabTransform = tempGloabTransform.Inverse();
 	m_gloabInverseTransform = AiMatrixToXMFLOAT4x4(tempGloabTransform);
 
 	UINT maxNum = 0;
-	for (int i = 0; i < m_aiscene->mNumMeshes; i++)
+	for (int i = 0; i < m_aiScene->mNumMeshes; i++)
 	{
-		if (m_aiscene->mMeshes[i]->mNumVertices > maxNum)
+		if (m_aiScene->mMeshes[i]->mNumVertices > maxNum)
 		{
-			maxNum = m_aiscene->mMeshes[i]->mNumVertices;
+			maxNum = m_aiScene->mMeshes[i]->mNumVertices;
 		}
 	}
 	mbones.resize(maxNum);
 
 	//MeshGeometryClass::Mesh::VertexPosNormalTex verteics[] = {};
-	for (int i = 0; i < m_aiscene->mNumMeshes; i++)
+	for (int i = 0; i < m_aiScene->mNumMeshes; i++)
 	{
 		mMeshTable.emplace_back();
 		Mesh& mesh = mMeshTable.back();
-		mesh.Id = m_aiscene->mNumMeshes;
+		mesh.Id = m_aiScene->mNumMeshes;
 
-		aiMesh* aimesh = m_aiscene->mMeshes[i];
+		aiMesh* aimesh = m_aiScene->mMeshes[i];
 
 		//mbones.resize(aimesh->mNumVertices*aimesh->mNumBones);
 		//mbones.resize(aimesh->mNumBones);
@@ -388,7 +388,7 @@ bool MeshGeometryClass::LoadMeshWithSkinnedAnimation(std::string filePath)
 
 		}
 
-		aiNode* sceneRootNode = m_aiscene->mRootNode;
+		aiNode* sceneRootNode = m_aiScene->mRootNode;
 		//m_aiNode.push_back(sceneRootNode);
 		for (int f = 0; f < aimesh->mNumBones; f++)
 		{
@@ -476,7 +476,7 @@ bool MeshGeometryClass::LoadMeshWithSkinnedAnimation(std::string filePath)
 			}
 		}
 
-		m_gloabInverseTransform = AiMatrixToXMFLOAT4x4(m_aiscene->mRootNode->mTransformation.Inverse());
+		m_gloabInverseTransform = AiMatrixToXMFLOAT4x4(m_aiScene->mRootNode->mTransformation.Inverse());
 
 		mesh.VertexCount = aimesh->mNumVertices;
 		mesh.FaceStart = currentFace;
@@ -594,16 +594,16 @@ void  MeshGeometryClass::BoneTransform(float TimeInSeconds, vector<XMFLOAT4X4>& 
 	XMMATRIX temp = XMMatrixIdentity();
 	XMStoreFloat4x4(&identify, temp);
 
-	float TickPerSecond = m_aiscene->mAnimations[0]->mTicksPerSecond != 0 ? m_aiscene->mAnimations[0]->mTicksPerSecond : 25.0f;
+	float TickPerSecond = m_aiScene->mAnimations[0]->mTicksPerSecond != 0 ? m_aiScene->mAnimations[0]->mTicksPerSecond : 25.0f;
 	float TimeInTicks = TimeInSeconds * TickPerSecond;
-	float AnimationTime = fmod(TimeInTicks, m_aiscene->mAnimations[0]->mDuration);
+	float AnimationTime = fmod(TimeInTicks, m_aiScene->mAnimations[0]->mDuration);
 
 	ReadNodeHierarchy(AnimationTime, m_aiNode[0], identify);
 
 	transforms.resize(m_NumBone);
 
 	for (uint i = 0; i < m_NumBone; i++) {
-		Transforms[i] = m_BoneInfo[i].finalTransformation;
+		m_calculatedBoneTransforms[i] = m_BoneInfo[i].finalTransformation;
 	}
 
 }
@@ -611,7 +611,7 @@ void  MeshGeometryClass::BoneTransform(float TimeInSeconds, vector<XMFLOAT4X4>& 
 void MeshGeometryClass::ReadNodeHierarchy(float AnimationTime, const aiNode* pNode, const XMFLOAT4X4& ParentTransform)
 {
 	string nodeName = pNode->mName.data;
-	const aiAnimation* pAnimation = m_aiscene->mAnimations[0];
+	const aiAnimation* pAnimation = m_aiScene->mAnimations[0];
 	aiMatrix4x4 nodeTransformation = pNode->mTransformation;
 
 	const aiNodeAnim* pNodeAnim = FindNodeAnim(pAnimation, nodeName);
