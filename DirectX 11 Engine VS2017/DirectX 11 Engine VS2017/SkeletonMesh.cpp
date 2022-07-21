@@ -51,7 +51,7 @@ aiNode* SkeletonMesh::FindNodeToChild(aiNode* parentNode, const std::string& des
 	}
 	return nullptr;
 }
-
+/*
 template<typename VertexTypeA>
 bool  SkeletonMesh::SetVertices(ID3D11Device* device, const VertexTypeA* in_vertices, UINT in_count, UINT in_offset, SkeletonMesh* pBuffer)
 {
@@ -102,8 +102,65 @@ bool SkeletonMesh::SetIndices(ID3D11Device* device, const vector<DWORD> index, U
 
 	return true;
 }
+*/
+bool SkeletonMesh::CreateVertexBuffer(ID3D11Device* device)
+{
+	m_vertexStride = sizeof(SkinnedVertexIn);
+	
 
-bool SkeletonMesh::InitializeSkinModel(std::string filePath, ComPtr<ID3D11Device> device)
+	D3D11_BUFFER_DESC vertexBufferDesc;
+	ZeroMemory(&vertexBufferDesc, sizeof(vertexBufferDesc));
+	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	vertexBufferDesc.ByteWidth = sizeof(SkinnedVertexIn) * m_meshSection.m_verteiceWithSkinnedAnimation.size();
+	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	vertexBufferDesc.CPUAccessFlags = 0;
+	vertexBufferDesc.MiscFlags = 0;
+	vertexBufferDesc.StructureByteStride = 0;
+
+	D3D11_SUBRESOURCE_DATA vertexData;
+	ZeroMemory(&vertexData, sizeof(D3D11_SUBRESOURCE_DATA));
+	vertexData.pSysMem = m_meshSection.m_verteiceWithSkinnedAnimation.data();
+
+
+	if (device == nullptr)
+	{
+		ErrorLogger::Log(("The device is null"));
+		return false;
+	}
+
+	HRESULT HR(device->CreateBuffer(&vertexBufferDesc, &vertexData, m_meshSection.m_vertexBuffer.GetAddressOf()));
+
+	return true;
+}
+
+bool SkeletonMesh::CreateIndexBuffer(ID3D11Device* device)
+{
+	D3D11_BUFFER_DESC  indexBufferDesc;
+	indexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+	indexBufferDesc.ByteWidth = sizeof(DWORD) * m_meshSection.m_indices.size();
+	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	indexBufferDesc.CPUAccessFlags = 0;
+	indexBufferDesc.MiscFlags = 0;
+	indexBufferDesc.StructureByteStride = 0;
+
+	D3D11_SUBRESOURCE_DATA indexData;
+	indexData.pSysMem = m_meshSection.m_indices.data();
+	indexData.SysMemPitch = 0;
+	indexData.SysMemSlicePitch = 0;
+
+	HRESULT HR(device->CreateBuffer(&indexBufferDesc, &indexData, m_meshSection.m_indexBuffer.GetAddressOf()));
+
+	return true;
+}
+bool SkeletonMesh::InitializeSkinModel(std::string in_filePath, ID3D11Device *in_device)
+{
+	LoadDataFromFlie(in_filePath);
+	CreateVertexBuffer(in_device);
+	CreateIndexBuffer(in_device);
+	return true;
+}
+
+bool SkeletonMesh::LoadDataFromFlie(const std::string& filePath)
 {
 	Assimp::Importer assimpImporter;
 	unsigned int importingFlags = aiProcess_FlipUVs || aiProcess_Triangulate;
@@ -130,11 +187,6 @@ bool SkeletonMesh::InitializeSkinModel(std::string filePath, ComPtr<ID3D11Device
 		return false;
 	}
 
-	static DWORD start;
-	static DWORD end;
-	static DWORD currentFace;
-	start = end = currentFace = 0;
-
 
 	aiMatrix4x4 tempGloabTransform = assimpScene->mRootNode->mTransformation;
 	tempGloabTransform = tempGloabTransform.Inverse();
@@ -153,25 +205,12 @@ bool SkeletonMesh::InitializeSkinModel(std::string filePath, ComPtr<ID3D11Device
 
 	for (int i = 0; i < assimpScene->mNumMeshes; i++)
 	{
-		m_meshTable.push_back(std::make_shared<SkeletonMesh>());
-		std::shared_ptr<SkeletonMesh> model = m_meshTable.back();
-		model->m_ID = assimpScene->mNumMeshes;
-
 		aiMesh* aimesh = assimpScene->mMeshes[i];
-
-		//mbones.resize(aimesh->mNumVertices*aimesh->mNumBones);
-		//mbones.resize(aimesh->mNumBones);
-
-
-		end += start;
-		end += aimesh->mNumVertices;
 
 		vector<XMFLOAT4X4> boneOffset;
 		vector<int> boneToParentIndex;
 
 		SkeletonMesh::SkinnedVertexIn temp;
-
-
 		for (DWORD j = 0; j < aimesh->mNumVertices; j++)
 		{
 			// vertex
@@ -193,24 +232,19 @@ bool SkeletonMesh::InitializeSkinModel(std::string filePath, ComPtr<ID3D11Device
 			}
 			//TODO add bone indicies and weights
 
-			model->m_verteiceWithSkinnedAnimation.push_back(temp);
+			m_meshSection.m_verteiceWithSkinnedAnimation.push_back(temp);
 		}
 
 		for (DWORD j = 0; j < aimesh->mNumFaces; j++)
 		{
 			aiFace face = aimesh->mFaces[j];
-			//UINT t1 = aimesh->mFaces[j].mIndices[0];
-			//UINT t2 = aimesh->mFaces[j].mIndices[1];
-			//UINT t3 = aimesh->mFaces[j].mIndices[2];
-
 			for (DWORD k = 0; k < face.mNumIndices; k++)
 			{
-				model->m_index.push_back(face.mIndices[k]);
-				model->m_faceCount++;
+				m_meshSection.m_indices.push_back(face.mIndices[k]);
 			}
 		}
 
-		
+
 
 		UINT AllVertexCount = 0;
 		for (int vc = 0; vc < m_meshTable.size(); vc++)
@@ -269,8 +303,8 @@ bool SkeletonMesh::InitializeSkinModel(std::string filePath, ComPtr<ID3D11Device
 				tempFloat.z = m_bones[AllVertexCount + j].weights[2];
 				tempFloat.w = m_bones[AllVertexCount + j].weights[3];
 
-				model->m_verteiceWithSkinnedAnimation[j].boneIndiecs = tempUint;
-				model->m_verteiceWithSkinnedAnimation[j].weights = tempFloat;
+				m_meshSection.m_verteiceWithSkinnedAnimation[j].boneIndiecs = tempUint;
+				m_meshSection.m_verteiceWithSkinnedAnimation[j].weights = tempFloat;
 			}
 		}
 
@@ -362,16 +396,6 @@ bool SkeletonMesh::InitializeSkinModel(std::string filePath, ComPtr<ID3D11Device
 
 		m_gloabInverseTransform = AiMatrixToXMFLOAT4x4(assimpScene->mRootNode->mTransformation.Inverse());
 
-		model->m_vetexCount = aimesh->mNumVertices;
-		model->m_faceStart = currentFace;
-		currentFace += aimesh->mNumFaces;
-		model->m_faceCount = aimesh->mNumFaces;
-		model->m_vertexStart = start;
-		start = end;
-
-		m_dev = device;
-		model->SetVertices(m_dev.Get(), model->m_verteiceWithSkinnedAnimation.data(), model->m_verteiceWithSkinnedAnimation.size(), i, this);
-		model->SetIndices(m_dev.Get(), model->m_index, i, this);
 	}
 }
 
@@ -625,19 +649,13 @@ aiMatrix4x4  SkeletonMesh::InitTranslationTransform(float x, float y, float z)
 void SkeletonMesh::Draw(ID3D11DeviceContext* in_deviceContext,ID3D11InputLayout* inputLayout,ID3D11VertexShader* vShader,ID3D11PixelShader* pShader,UINT meshOffset)
 {
 	UINT offset = 0;
-	//in_deviceContext->IASetVertexBuffers(0, 1, m_vertexBuffers[0].GetAddressOf(), &m_meshTable[0]->m_vertexStride, &offset);
-	//in_deviceContext->IASetIndexBuffer(m_indexBuffers[0].Get(), DXGI_FORMAT_R32_UINT, offset);
-	in_deviceContext->DrawIndexed(m_meshTable[1]->m_faceCount * 3, 0, 0);
+
 	
 }
 
 void SkeletonMesh::DrawAllMesh(ID3D11DeviceContext* in_deviceContext,ID3D11InputLayout* inputLayout,ID3D11VertexShader* vShader,ID3D11PixelShader* pShader)
 {
-
-	for (int i = 0; i < m_meshTable.size(); i++)
-	{
-		m_meshTable[i]->Draw(in_deviceContext, inputLayout, vShader, pShader, i);
-	}
-
-
+	in_deviceContext->IASetVertexBuffers(0, 1, m_meshSection.m_vertexBuffer.GetAddressOf(), &m_vertexStride, 0);
+	in_deviceContext->IASetIndexBuffer(m_meshSection.m_indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+	in_deviceContext->DrawIndexed(m_meshSection.m_indices.size(), 0, 0);
 }

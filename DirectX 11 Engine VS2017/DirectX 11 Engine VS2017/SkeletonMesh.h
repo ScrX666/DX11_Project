@@ -63,7 +63,14 @@ class SkeletonMesh
 		XMFLOAT4X4 boneOffsetMatrix;
 		XMFLOAT4X4 finalTransformation;
 	};
-
+	struct MeshSection
+	{
+		vector<VertexPosNormalTex> m_vertexs;
+		vector<SkinnedVertexIn> m_verteiceWithSkinnedAnimation;
+		vector<UINT> m_indices;
+		ComPtr<ID3D11Buffer> m_vertexBuffer;
+		ComPtr<ID3D11Buffer> m_indexBuffer;
+	};
 
 public:
 	SkeletonMesh() = default;
@@ -80,7 +87,8 @@ public:
 	XMFLOAT4X4  AiMatrixToXMFLOAT4x4(aiMatrix4x4 ai);
 	aiMatrix4x4 XMFLOAT4x4ToAiMatrix(XMFLOAT4X4 xm);
 	void ReadNodeHierarchy(float AnimationTime, const aiNode* pNode, const XMFLOAT4X4& ParentTransform);
-	bool InitializeSkinModel(std::string filePath, ComPtr<ID3D11Device> device);
+	bool InitializeSkinModel(std::string filePath, ID3D11Device *device);
+	bool LoadDataFromFlie(const std::string &filePath);
 	void  BoneTransform(float TimeInSeconds, vector<XMFLOAT4X4>& transforms);
 	aiNode* FindNodeToParent(aiNode* childNode, const std::string& destNodeName);
 	aiNode* FindNodeToChild(aiNode* childNode, const std::string& destNodeName);
@@ -91,6 +99,8 @@ public:
 	UINT FindPosition(float AnimationTime, const aiNodeAnim* pNodeAnim);
 	UINT FindScaling(float AnimationTime, const aiNodeAnim* pNodeAnim);
 	UINT FindRotation(float AnimationTime, const aiNodeAnim* pNodeAnim);
+	bool CreateVertexBuffer(ID3D11Device* device);
+	bool CreateIndexBuffer(ID3D11Device* device);
 
 	aiMatrix4x4  InitScaleTransform(float x, float y, float z);
 	aiMatrix4x4  InitTranslationTransform(float x, float y, float z);
@@ -113,19 +123,14 @@ protected:
 
 	std::vector<ComPtr<ID3D11Buffer>> m_pTexcoordArrays;
 
-	ComPtr<ID3D11Buffer> m_tangents;
-	ComPtr<ID3D11Buffer> m_colors;
-	ComPtr<ID3D11Buffer> m_indices;
 
 
 	DXGI_FORMAT m_indexBufferFormat; //unsigned long
 	UINT m_vertexStride;
 
-	vector<VertexPosNormalTex> m_verteice;
-	vector<SkinnedVertexIn> m_verteiceWithSkinnedAnimation;
-	vector<DWORD> m_index;
-
-	VertexBuffer<Vertex> m_vertexbuffer;
+	ID3D11Buffer *vertexbuffer;
+	ID3D11Buffer *indexbuffer;
+	
 
 	ID3D11DeviceContext* m_deviceContext;
 	ConstantBuffer<ContantBuffer_VS>* m_VSConstantBuffer;
@@ -145,11 +150,10 @@ protected:
 	vector<BoneInfo> m_boneInfoCollapsed;
 	vector<aiNode*> m_aiNode;
 
-	IndexBuffer indexbuffer;
 	size_t m_numMeshs;
 
-	ComPtr<ID3D11Buffer> m_vertexBuffers[NUM_BONE_PER_MESH];
-	ComPtr<ID3D11Buffer> m_indexBuffers[NUM_BONE_PER_MESH];
+	//vector<MeshSection> meshSection;
+	MeshSection m_meshSection;
 
 	unsigned int m_numBones;
 	XMFLOAT4X4 m_gloabInverseTransform;
