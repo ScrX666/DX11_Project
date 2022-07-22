@@ -9,10 +9,10 @@
 #include "Model.h"
 #include <SpriteBatch.h>
 #include <SpriteFont.h>
-#include "Timer.h"
 #include"ConstantBuffer.h"
 #include "StaticMesh.h"
 #include "SkeletonMesh.h"
+#include "GameTimer.h"
 
 class Graphics
 {
@@ -66,6 +66,6 @@ protected:
 
 	int windowWidth = 0;
 	int windowHeight = 0;
-	Timer fpsTimer;
+	GameTimer fpsTimer;
 
 };

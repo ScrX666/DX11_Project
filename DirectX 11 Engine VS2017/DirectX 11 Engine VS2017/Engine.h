@@ -1,7 +1,7 @@
 #pragma once
 
 #include "WindowContainer.h"
-#include "Timer.h"
+#include "GameTimer.h"
 class Engine :public WindowContainer
 {
 public:
@@ -15,7 +15,7 @@ public:
 
 
 private:
-	Timer timer;
+	GameTimer gtime;
 	Camera camera;
 	ConstantBuffer <ContantBuffer_VS> m_cBufferFrequently;
 	

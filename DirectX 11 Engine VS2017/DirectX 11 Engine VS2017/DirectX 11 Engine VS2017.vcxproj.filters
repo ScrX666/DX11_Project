@@ -72,9 +72,6 @@
     <ClCompile Include="Mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Timer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="StaticMesh.cpp">
       <Filter>Tree</Filter>
     </ClCompile>
@@ -82,6 +79,9 @@
       <Filter>Tree</Filter>
     </ClCompile>
     <ClCompile Include="SkeletonMesh.cpp">
+      <Filter>Tree</Filter>
+    </ClCompile>
+    <ClCompile Include="GameTimer.cpp">
       <Filter>Tree</Filter>
     </ClCompile>
   </ItemGroup>
@@ -146,9 +146,6 @@
     <ClInclude Include="Mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Timer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="StaticMesh.h">
       <Filter>Tree</Filter>
     </ClInclude>
@@ -156,6 +153,9 @@
       <Filter>Tree</Filter>
     </ClInclude>
     <ClInclude Include="SkeletonMesh.h">
+      <Filter>Tree</Filter>
+    </ClInclude>
+    <ClInclude Include="GameTimer.h">
       <Filter>Tree</Filter>
     </ClInclude>
   </ItemGroup>

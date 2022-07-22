@@ -5,7 +5,7 @@
 
 bool Engine::Initialize( HINSTANCE hInstance, std::string window_title, std::string window_class, int width, int height)
 {
-	timer.Start();
+	gtime.Start();
 
 	bool InitializeWindowSuccessfully =	render_window.Initialize(hInstance, window_title, window_class, width, height);
 	if (!InitializeWindowSuccessfully)
@@ -36,9 +36,9 @@ bool Engine::ProcessMessages()
 }
 void Engine::Update()
 {
-	float deltaTime = timer.GetMilisecondsElapsed();
-	timer.Restart();
-
+	
+	float deltaTime = gtime.DeltaTime();
+	gtime.Reset();
 
 
 	while (!keyboard.CharBufferIsEmpty())
@@ -106,10 +106,9 @@ void Engine::Update()
 	vector<XMFLOAT4X4> arBoneMatrixs;
 	
 	
-	float runningTime = 1;//timer.TotalTime();
-
+	float runningTime = gtime.TotalTime();
 	double perFrameTime = 1.0f / 60.0f;
-	float currentFrames = runningTime / perFrameTime;
+	double currtFrame = runningTime / perFrameTime;
 
 	//calculate bone animation
 	gfx.skeletonMesh.BoneTransform(runningTime, gfx.skeletonMesh.m_calculatedBoneTransforms);
