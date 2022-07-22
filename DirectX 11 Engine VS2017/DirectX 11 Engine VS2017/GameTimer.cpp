@@ -1,156 +1,96 @@
-#include <windows.h>
 #include "GameTimer.h"
 
+#include <windows.h>
+
 GameTimer::GameTimer()
-	: m_SecondsPerCount(0.0), m_DeltaTime(-1.0), m_BaseTime(0), m_StopTime(0),
-	m_PausedTime(0), m_PrevTime(0), m_CurrTime(0), m_Stopped(false)
+	:
+	m_performanceCountPeriod(0.0),
+	m_atStart(0),
+	m_deltaTime(-1.0f),
+	m_accumulationWhenPaused(0),
+	m_atStop(0),
+	m_last(0),
+	m_current(0),
+	m_bIsStopped(false)
 {
-	__int64 countsPerSec;
-	QueryPerformanceFrequency((LARGE_INTEGER*)&countsPerSec);
-	m_SecondsPerCount = 1.0 / (double)countsPerSec;
-
-	start = std::chrono::high_resolution_clock::now();
-	stop = std::chrono::high_resolution_clock::now();
-
+	uint64_t performanceFreq;
+	QueryPerformanceFrequency(reinterpret_cast<LARGE_INTEGER*>(&performanceFreq));
+	m_performanceCountPeriod = 1.0 / (double)performanceFreq;
 }
 
-// Returns the total time elapsed since Reset() was called, NOT counting any
-// time when the clock is stopped.
-float GameTimer::TotalTime()const
+float GameTimer::GetTotalTime() const
 {
-	// If we are stopped, do not count the time that has passed since we stopped.
-	// Moreover, if we previously already had a pause, the distance 
-	// m_StopTime - m_BaseTime includes paused time, which we do not want to count.
-	// To correct this, we can subtract the paused time from m_StopTime:  
-	//
-	//                     |<--paused time-->|
-	// ----*---------------*-----------------*------------*------------*------> time
-	//  m_BaseTime       m_StopTime        startTime     m_StopTime    m_CurrTime
-
-	if (m_Stopped)
+	if (m_bIsStopped)
 	{
-		return (float)(((m_StopTime - m_PausedTime) - m_BaseTime) * m_SecondsPerCount);
+		return static_cast<float>((m_atStop - m_atStart - m_accumulationWhenPaused) * m_performanceCountPeriod);
 	}
 
-	// The distance m_CurrTime - m_BaseTime includes paused time,
-	// which we do not want to count.  To correct this, we can subtract 
-	// the paused time from m_CurrTime:  
-	//
-	//  (m_CurrTime - m_PausedTime) - m_BaseTime 
-	//
-	//                     |<--paused time-->|
-	// ----*---------------*-----------------*------------*------> time
-	//  m_BaseTime       m_StopTime        startTime     m_CurrTime
-
-	else
-	{
-		return (float)(((m_CurrTime - m_PausedTime) - m_BaseTime) * m_SecondsPerCount);
-	}
+	return  static_cast<float>((m_current - m_atStart - m_accumulationWhenPaused) * m_performanceCountPeriod);
 }
 
-float GameTimer::DeltaTime()const
+float GameTimer::GetDeltaTime() const
 {
-	return (float)m_DeltaTime;
+	return  static_cast<float>(m_deltaTime);
+}
+
+bool GameTimer::IsStopped()
+{
+	return m_bIsStopped;
 }
 
 void GameTimer::Reset()
 {
-	__int64 currTime;
-	QueryPerformanceCounter((LARGE_INTEGER*)&currTime);
-
-	m_BaseTime = currTime;
-	m_PrevTime = currTime;
-	m_StopTime = 0;
-	m_PausedTime = 0;	// 涉及到多次Reset的话需要将其归0
-	m_Stopped = false;
-
-	isrunning = true;
-	start = std::chrono::high_resolution_clock::now();
-
+	uint64_t now;
+	QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&now));
+	m_atStart = now;
+	m_last = now;
+	m_atStop = 0;
+	m_bIsStopped = false;
 }
 
 void GameTimer::Start()
 {
-	__int64 startTime;
-	QueryPerformanceCounter((LARGE_INTEGER*)&startTime);
-
-
-	// Accumulate the time elapsed between stop and start pairs.
-	//
-	//                     |<-------d------->|
-	// ----*---------------*-----------------*------------> time
-	//  m_BaseTime       m_StopTime        startTime     
-
-	if (m_Stopped)
+	uint64_t now;
+	QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&now));
+	if (m_bIsStopped)
 	{
-		m_PausedTime += (startTime - m_StopTime);
-
-		m_PrevTime = startTime;
-		m_StopTime = 0;
-		m_Stopped = false;
-
-	}
-	else
-	{
-		start = std::chrono::high_resolution_clock::now();
-		isrunning = true;
+		m_accumulationWhenPaused += (now - m_atStop);
+		m_atStop = 0;
+		m_bIsStopped = false;
 	}
 
-
-
+	m_last = now;
 }
 
 void GameTimer::Stop()
 {
-	if (!m_Stopped)
-	{
-		__int64 currTime;
-		QueryPerformanceCounter((LARGE_INTEGER*)&currTime);
-
-		m_StopTime = currTime;
-		m_Stopped = true;
-	}
-	if (isrunning)
-	{
-		stop = std::chrono::high_resolution_clock::now();
-		isrunning = false;
+	if (!m_bIsStopped) {
+		int64_t now;
+		QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&now));
+		m_atStop = now;
+		m_bIsStopped = true;
 	}
 }
 
 void GameTimer::Tick()
 {
-	if (m_Stopped)
-	{
-		m_DeltaTime = 0.0;
+	if (m_bIsStopped) {
+		m_deltaTime = 0.0;
 		return;
 	}
 
-	__int64 currTime;
-	QueryPerformanceCounter((LARGE_INTEGER*)&currTime);
-	m_CurrTime = currTime;
+	uint64_t now;
+	QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&now));
+	m_current = now;
 
-	// Time difference between this frame and the previous.
-	m_DeltaTime = (m_CurrTime - m_PrevTime) * m_SecondsPerCount;
+	m_deltaTime = (m_current - m_last) * m_performanceCountPeriod;
 
-	// Prepare for next frame.
-	m_PrevTime = m_CurrTime;
+	m_last = m_current;
 
-	if (m_DeltaTime < 0.0)
-	{
-		m_DeltaTime = 0.0;
+	//Force nonnegative,because if the processor goes into a power save mode or we get shuffled to
+	//another processor, then mDeltaTime can be negative.
+	if (m_deltaTime < 0.0) {
+		m_deltaTime = 0.0;
 	}
 }
-double GameTimer::GetMilisecondsElapsed()
-{
-	if (isrunning)
-	{
-		auto elapsed = std::chrono::duration<double, std::milli>(std::chrono::high_resolution_clock::now() - start);
-		return elapsed.count();
-	}
-	else
-	{
-		auto elapsed = std::chrono::duration<double, std::milli>(stop - start);
-		return elapsed.count();
-	}
 
-}

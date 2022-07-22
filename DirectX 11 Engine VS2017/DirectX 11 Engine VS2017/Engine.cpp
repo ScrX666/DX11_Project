@@ -36,9 +36,9 @@ bool Engine::ProcessMessages()
 }
 void Engine::Update()
 {
-	
-	float deltaTime = gtime.DeltaTime();
-	gtime.Reset();
+
+	gtime.Tick();
+	float deltaTime = gtime.GetDeltaTime();
 
 
 	while (!keyboard.CharBufferIsEmpty())
@@ -106,7 +106,7 @@ void Engine::Update()
 	vector<XMFLOAT4X4> arBoneMatrixs;
 	
 	
-	float runningTime = gtime.TotalTime();
+	float runningTime = gtime.GetTotalTime();
 	double perFrameTime = 1.0f / 60.0f;
 	double currtFrame = runningTime / perFrameTime;
 
