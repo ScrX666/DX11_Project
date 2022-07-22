@@ -307,8 +307,8 @@ bool Graphics::InitializeScene()
 	//	return false;
 	//}
 
-	staMesh.Initialize("..\\DirectX 11 Engine VS2017\\Data\\Fixed.fbx", m_device.Get(), deviceContext.Get(), myTexture.Get(), &cb_vs_vertexshader);
-	skeletonMesh.InitializeSkinModel("..\\DirectX 11 Engine VS2017\\Data\\Fixed.fbx", m_device.Get());
+	staMesh.Initialize("..\\DirectX 11 Engine VS2017\\Data\\Dance.fbx", m_device.Get(), deviceContext.Get(), myTexture.Get(), &cb_vs_vertexshader);
+	skeletonMesh.InitializeSkinModel("..\\DirectX 11 Engine VS2017\\Data\\Dance.fbx", m_device.Get());
 	//Initialize Font
 	spriteBatch = std::make_unique<DirectX::SpriteBatch>(this->deviceContext.Get());
 	spriteFont = std::make_unique<DirectX::SpriteFont>(this->m_device.Get(), L"..\\DirectX 11 Engine VS2017\\Data\\myFont.spritefont");
