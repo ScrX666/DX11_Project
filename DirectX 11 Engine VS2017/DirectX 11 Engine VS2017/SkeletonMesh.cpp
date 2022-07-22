@@ -1,4 +1,5 @@
 #include "SkeletonMesh.h"
+#include <stdint.h>
 
 aiNode* SkeletonMesh::FindNodeToParent(aiNode* childNode, const std::string& destNodeName)
 {
@@ -293,18 +294,18 @@ bool SkeletonMesh::LoadDataFromFlie(const std::string& filePath)
 
 			for (DWORD j = 0; j < aimesh->mNumVertices; j++)
 			{
-				XMUINT4 tempUint;
-				tempUint.x = m_bones[AllVertexCount + j].iDs[0];
-				tempUint.y = m_bones[AllVertexCount + j].iDs[1];
-				tempUint.z = m_bones[AllVertexCount + j].iDs[2];
-				tempUint.w = m_bones[AllVertexCount + j].iDs[3];
+	
 				XMFLOAT4 tempFloat;
 				tempFloat.x = m_bones[AllVertexCount + j].weights[0];
 				tempFloat.y = m_bones[AllVertexCount + j].weights[1];
 				tempFloat.z = m_bones[AllVertexCount + j].weights[2];
 				tempFloat.w = m_bones[AllVertexCount + j].weights[3];
 
-				m_meshSection.m_vertexs[j].boneIndiecs = tempUint;
+				m_meshSection.m_vertexs[j].boneIndiecs[0] =  m_bones[AllVertexCount + j].iDs[0];
+				m_meshSection.m_vertexs[j].boneIndiecs[1] =  m_bones[AllVertexCount + j].iDs[1];
+				m_meshSection.m_vertexs[j].boneIndiecs[2] =  m_bones[AllVertexCount + j].iDs[2];
+				m_meshSection.m_vertexs[j].boneIndiecs[3] =  m_bones[AllVertexCount + j].iDs[3];
+
 				m_meshSection.m_vertexs[j].weights = tempFloat;
 			}
 		}
@@ -659,7 +660,7 @@ void SkeletonMesh::DrawAllMesh(ID3D11DeviceContext* in_deviceContext,ID3D11Input
 	cb_vertexshader = in_cb_vs_vertexshader;
 	UINT offset = 0;
 	//compute constantbuffer
-	cb_vertexshader->data.worldMat = XMMatrixIdentity();
+	cb_vertexshader->data.worldMat = XMMatrixScaling(0.01f,0.01f,0.01f);
 	cb_vertexshader->data.VPMat = viewProjectionMatrix;
 	cb_vertexshader->data.VPMat = XMMatrixTranspose(cb_vertexshader->data.VPMat);
 	for (UINT i = 0; i < m_numBones; i++)

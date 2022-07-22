@@ -27,7 +27,7 @@ class SkeletonMesh
 	struct SkinnedVertexIn
 	{
 		XMFLOAT3 pos;
-		XMUINT4 boneIndiecs;
+		uint8_t boneIndiecs[4];
 		XMFLOAT4 weights;
 		XMFLOAT3 normal;
 		XMFLOAT2 uv;
