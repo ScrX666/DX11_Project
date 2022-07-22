@@ -65,12 +65,15 @@ class SkeletonMesh
 		XMFLOAT4X4 boneOffsetMatrix;
 		XMFLOAT4X4 finalTransformation;
 	};
+
 	struct MeshSection
 	{
 		vector<SkinnedVertexIn> m_vertexs;
 		vector<UINT> m_indices;
 		ComPtr<ID3D11Buffer> m_vertexBuffer;
 		ComPtr<ID3D11Buffer> m_indexBuffer;
+
+		UINT m_vertexDataStride;
 	};
 
 public:
@@ -158,7 +161,7 @@ protected:
 
 	size_t m_numMeshs;
 
-	//vector<MeshSection> meshSection;
+	std::vector<MeshSection> m_meshSections;
 	MeshSection m_meshSection;
 
 	//vector<std::shared_ptr<MeshSection>> m_meshSection;

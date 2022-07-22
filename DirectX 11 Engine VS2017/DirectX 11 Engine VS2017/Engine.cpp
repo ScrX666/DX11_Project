@@ -36,9 +36,9 @@ bool Engine::ProcessMessages()
 }
 void Engine::Update()
 {
-	
-	float deltaTime = gtime.DeltaTime();
-	gtime.Reset();
+
+	gtime.Tick();
+	float deltaTime = gtime.GetMilisecondsElapsed();
 
 
 	while (!keyboard.CharBufferIsEmpty())
@@ -65,23 +65,23 @@ void Engine::Update()
 	}
 
 
-	const float cameraSpeed = 0.01f;
+	const float cameraSpeed = 0.1f;
 	if (keyboard.KeyIsPressed('W'))
 	{
-		this->gfx.camera.AdjustPosition(this->gfx.camera.GetForwardVector() * cameraSpeed * deltaTime);
+		this->gfx.camera.AdjustPosition(this->gfx.camera.GetForwardVector() * cameraSpeed  );
 	}
 	if (keyboard.KeyIsPressed('A'))
 	{
-		this->gfx.camera.AdjustPosition(this->gfx.camera.GetLeftVector() * cameraSpeed * deltaTime);
+		this->gfx.camera.AdjustPosition(this->gfx.camera.GetLeftVector() * cameraSpeed );
 	}
 	if (keyboard.KeyIsPressed('S'))
 	{
-		this->gfx.camera.AdjustPosition(this->gfx.camera.GetBackwardVector() * cameraSpeed * deltaTime);
+		this->gfx.camera.AdjustPosition(this->gfx.camera.GetBackwardVector() * cameraSpeed );
 		
 	}
 	if (keyboard.KeyIsPressed('D'))
 	{
-		this->gfx.camera.AdjustPosition(this->gfx.camera.GetRightVector() * cameraSpeed * deltaTime);
+		this->gfx.camera.AdjustPosition(this->gfx.camera.GetRightVector() * cameraSpeed );
 	}
 	if (keyboard.KeyIsPressed('F'))
 	{
@@ -90,15 +90,15 @@ void Engine::Update()
 	}
 	if (keyboard.KeyIsPressed('Q'))
 	{
-		this->gfx.camera.AdjustPosition(this->gfx.camera.GetUpVector() * cameraSpeed * deltaTime);
+		this->gfx.camera.AdjustPosition(this->gfx.camera.GetUpVector() * cameraSpeed );
 	}
 	if (keyboard.KeyIsPressed('E'))
 	{
-		this->gfx.camera.AdjustPosition(this->gfx.camera.GetUpVector() * cameraSpeed * -1 * deltaTime);
+		this->gfx.camera.AdjustPosition(this->gfx.camera.GetUpVector() * cameraSpeed * -1 );
 	}
 	if (keyboard.KeyIsPressed(VK_SPACE))
 	{
-		this->gfx.camera.AdjustPosition(this->gfx.camera.GetUpVector() * cameraSpeed * deltaTime);
+		this->gfx.camera.AdjustPosition(this->gfx.camera.GetUpVector() * cameraSpeed );
 	}
 
 	
@@ -106,7 +106,7 @@ void Engine::Update()
 	vector<XMFLOAT4X4> arBoneMatrixs;
 	
 	
-	float runningTime = gtime.TotalTime();
+	float runningTime = gtime.GetTotalTime();
 	double perFrameTime = 1.0f / 60.0f;
 	double currtFrame = runningTime / perFrameTime;
 

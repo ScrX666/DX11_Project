@@ -31,7 +31,7 @@ aiNode* SkeletonMesh::FindNodeToChild(aiNode* parentNode, const std::string& des
 {
 	if (parentNode != nullptr)
 	{
-		for (int child = 0; child < parentNode->mNumChildren; child++)
+		for (unsigned int child = 0; child < parentNode->mNumChildren; child++)
 		{
 			aiNode* childNode = parentNode->mChildren[child];
 			std::string name;
@@ -106,50 +106,64 @@ bool SkeletonMesh::SetIndices(ID3D11Device* device, const vector<DWORD> index, U
 */
 bool SkeletonMesh::CreateVertexBuffer(ID3D11Device* device)
 {
-	m_vertexStride = sizeof(SkinnedVertexIn);
-	
-
-	D3D11_BUFFER_DESC vertexBufferDesc;
-	ZeroMemory(&vertexBufferDesc, sizeof(vertexBufferDesc));
-	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	vertexBufferDesc.ByteWidth = sizeof(SkinnedVertexIn) * m_meshSection.m_vertexs.size();
-	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vertexBufferDesc.CPUAccessFlags = 0;
-	vertexBufferDesc.MiscFlags = 0;
-	vertexBufferDesc.StructureByteStride = 0;
-
-	D3D11_SUBRESOURCE_DATA vertexData;
-	ZeroMemory(&vertexData, sizeof(D3D11_SUBRESOURCE_DATA));
-	vertexData.pSysMem = m_meshSection.m_vertexs.data();
-	
-
 	if (device == nullptr)
 	{
 		ErrorLogger::Log(("The device is null"));
 		return false;
 	}
 
-	HRESULT HR(device->CreateBuffer(&vertexBufferDesc, &vertexData, m_meshSection.m_vertexBuffer.GetAddressOf()));
+	for (MeshSection& meshSection : m_meshSections)
+	{
+		meshSection.m_vertexDataStride = sizeof(SkinnedVertexIn);
+
+		D3D11_BUFFER_DESC bufferDesc;
+		ZeroMemory(&bufferDesc, sizeof(bufferDesc));
+		bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+		bufferDesc.ByteWidth = static_cast<UINT>(sizeof(SkinnedVertexIn) * meshSection.m_vertexs.size());
+		bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		bufferDesc.CPUAccessFlags = 0;
+		bufferDesc.MiscFlags = 0;
+		bufferDesc.StructureByteStride = 0;
+
+		D3D11_SUBRESOURCE_DATA subResourceData;
+		ZeroMemory(&subResourceData, sizeof(D3D11_SUBRESOURCE_DATA));
+		subResourceData.pSysMem = meshSection.m_vertexs.data();
+
+		HRESULT HR(device->CreateBuffer(&bufferDesc, &subResourceData, meshSection.m_vertexBuffer.GetAddressOf()));
+		if (FAILED(HR))
+		{
+			ErrorLogger::Log(("xxxxx"));
+			return false;
+		}
+	}
 
 	return true;
 }
 
 bool SkeletonMesh::CreateIndexBuffer(ID3D11Device* device)
 {
-	D3D11_BUFFER_DESC  indexBufferDesc;
-	indexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
-	indexBufferDesc.ByteWidth = sizeof(DWORD) * m_meshSection.m_indices.size();
-	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	indexBufferDesc.CPUAccessFlags = 0;
-	indexBufferDesc.MiscFlags = 0;
-	indexBufferDesc.StructureByteStride = 0;
+	for (MeshSection& meshSection : m_meshSections)
+	{
+		D3D11_BUFFER_DESC  bufferDesc;
+		bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+		bufferDesc.ByteWidth = static_cast<UINT>(sizeof(DWORD) * meshSection.m_indices.size());
+		bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+		bufferDesc.CPUAccessFlags = 0;
+		bufferDesc.MiscFlags = 0;
+		bufferDesc.StructureByteStride = 0;
 
-	D3D11_SUBRESOURCE_DATA indexData;
-	indexData.pSysMem = m_meshSection.m_indices.data();
-	indexData.SysMemPitch = 0;
-	indexData.SysMemSlicePitch = 0;
+		D3D11_SUBRESOURCE_DATA subResourceData;
+		subResourceData.pSysMem = meshSection.m_indices.data();
+		subResourceData.SysMemPitch = 0;
+		subResourceData.SysMemSlicePitch = 0;
 
-	HRESULT HR(device->CreateBuffer(&indexBufferDesc, &indexData, m_meshSection.m_indexBuffer.GetAddressOf()));
+		HRESULT HR(device->CreateBuffer(&bufferDesc, &subResourceData, meshSection.m_indexBuffer.GetAddressOf()));
+		if (FAILED(HR))
+		{
+			ErrorLogger::Log(("xxxxx"));
+			return false;
+		}
+	}
 
 	return true;
 }
@@ -194,7 +208,7 @@ bool SkeletonMesh::LoadDataFromFlie(const std::string& filePath)
 	m_gloabInverseTransform = AiMatrixToXMFLOAT4x4(tempGloabTransform);
 
 	UINT maxNum = 0;
-	for (int i = 0; i < m_assimpScene->mNumMeshes; i++)
+	for (unsigned int i = 0; i < m_assimpScene->mNumMeshes; i++)
 	{
 		if (m_assimpScene->mMeshes[i]->mNumVertices > maxNum)
 		{
@@ -204,8 +218,10 @@ bool SkeletonMesh::LoadDataFromFlie(const std::string& filePath)
 	m_bones.resize(maxNum);
 
 
-	for (int i = 0; i < m_assimpScene->mNumMeshes; i++)
+	for (unsigned int i = 0; i < m_assimpScene->mNumMeshes; i++)
 	{
+		MeshSection newMeshSection;
+
 		aiMesh* aimesh = m_assimpScene->mMeshes[i];
 
 		vector<XMFLOAT4X4> boneOffset;
@@ -225,7 +241,6 @@ bool SkeletonMesh::LoadDataFromFlie(const std::string& filePath)
 			temp.normal.z = aimesh->mNormals[j].z;
 
 			// texcoord
-			XMFLOAT2 texcoord;
 			if (aimesh->mTextureCoords[0])
 			{
 				temp.uv.x = aimesh->mTextureCoords[0][j].x;
@@ -233,7 +248,7 @@ bool SkeletonMesh::LoadDataFromFlie(const std::string& filePath)
 			}
 			//TODO add bone indicies and weights
 
-			m_meshSection.m_vertexs.push_back(temp);
+			newMeshSection.m_vertexs.push_back(temp);
 		}
 
 		for (UINT j = 0; j < aimesh->mNumFaces; j++)
@@ -241,14 +256,14 @@ bool SkeletonMesh::LoadDataFromFlie(const std::string& filePath)
 			aiFace face = aimesh->mFaces[j];
 			for (UINT k = 0; k < face.mNumIndices; k++)
 			{
-				m_meshSection.m_indices.push_back(face.mIndices[k]);
+				newMeshSection.m_indices.push_back(face.mIndices[k]);
 			}
 		}
 
 
 
 		//UINT AllVertexCount = 0;
-		UINT AllVertexCount = m_meshSection.m_vertexs.size();
+		UINT AllVertexCount = static_cast<UINT>(newMeshSection.m_vertexs.size());
 		/*for (int vc = 0; vc < m_meshTable.size(); vc++)
 		{
 			AllVertexCount += m_meshTable[vc]->m_vetexCount;
@@ -281,38 +296,32 @@ bool SkeletonMesh::LoadDataFromFlie(const std::string& filePath)
 			m_boneInfo[boneIndex].boneOffsetMatrix = tempMatrix;
 			m_boneInfo[boneIndex].name = aimesh->mBones[k]->mName.data;
 
-
 			for (UINT l = 0; l < aimesh->mBones[k]->mNumWeights; l++)
 			{
-
 				UINT VertexID = AllVertexCount + aimesh->mBones[k]->mWeights[l].mVertexId;
-				//UINT VertexID =  aimesh->mBones[k]->mWeights[l].mVertexId;
 				float Weight = aimesh->mBones[k]->mWeights[l].mWeight;
 				m_bones[VertexID].AddBoneData(boneIndex, Weight);
 			}
 
-
 			for (DWORD j = 0; j < aimesh->mNumVertices; j++)
 			{
-	
 				XMFLOAT4 tempFloat;
 				tempFloat.x = m_bones[AllVertexCount + j].weights[0];
 				tempFloat.y = m_bones[AllVertexCount + j].weights[1];
 				tempFloat.z = m_bones[AllVertexCount + j].weights[2];
 				tempFloat.w = m_bones[AllVertexCount + j].weights[3];
 
-				m_meshSection.m_vertexs[j].boneIndiecs[0] =  m_bones[AllVertexCount + j].iDs[0];
-				m_meshSection.m_vertexs[j].boneIndiecs[1] =  m_bones[AllVertexCount + j].iDs[1];
-				m_meshSection.m_vertexs[j].boneIndiecs[2] =  m_bones[AllVertexCount + j].iDs[2];
-				m_meshSection.m_vertexs[j].boneIndiecs[3] =  m_bones[AllVertexCount + j].iDs[3];
+				newMeshSection.m_vertexs[j].boneIndiecs[0] =  m_bones[AllVertexCount + j].iDs[0];
+				newMeshSection.m_vertexs[j].boneIndiecs[1] =  m_bones[AllVertexCount + j].iDs[1];
+				newMeshSection.m_vertexs[j].boneIndiecs[2] =  m_bones[AllVertexCount + j].iDs[2];
+				newMeshSection.m_vertexs[j].boneIndiecs[3] =  m_bones[AllVertexCount + j].iDs[3];
 
-				m_meshSection.m_vertexs[j].weights = tempFloat;
+				newMeshSection.m_vertexs[j].weights = tempFloat;
 			}
 		}
 
 		aiNode* sceneRootNode = m_assimpScene->mRootNode;
-		//m_aiNode.push_back(sceneRootNode);
-		for (int f = 0; f < aimesh->mNumBones; f++)
+		for (unsigned int f = 0; f < aimesh->mNumBones; f++)
 		{
 			aiNode* newNode = FindNodeToChild(sceneRootNode, aimesh->mBones[f]->mName.C_Str());
 			int fatherCount = 0;
@@ -346,6 +355,7 @@ bool SkeletonMesh::LoadDataFromFlie(const std::string& filePath)
 				scaling = scaleNode->mTransformation;
 				fatherCount++;
 			}
+
 			//find father
 			aiNode* tempFather, * tempSon;
 			tempFather = newNode->mParent;
@@ -367,7 +377,7 @@ bool SkeletonMesh::LoadDataFromFlie(const std::string& filePath)
 				else
 				{
 					newNode->mParent = tempFather;
-					for (int sonCount = 0; sonCount < newNode->mParent->mNumChildren; sonCount++)
+					for (unsigned int sonCount = 0; sonCount < newNode->mParent->mNumChildren; sonCount++)
 					{
 
 						string fatherName = newNode->mParent->mChildren[sonCount]->mName.C_Str();
@@ -382,7 +392,7 @@ bool SkeletonMesh::LoadDataFromFlie(const std::string& filePath)
 			newNode->mTransformation = translation * preRotation * rotation * scaling * newNode->mTransformation;
 
 			bool findTarget = false;
-			for (int tempNode = 0; tempNode < m_aiNode.size(); tempNode++)
+			for (size_t tempNode = 0; tempNode < m_aiNode.size(); tempNode++)
 			{
 				if (newNode->mName == m_aiNode[tempNode]->mName)
 				{
@@ -390,6 +400,7 @@ bool SkeletonMesh::LoadDataFromFlie(const std::string& filePath)
 					tempNode = m_aiNode.size();
 				}
 			}
+
 			if (!findTarget)
 			{
 				m_aiNode.push_back(newNode);
@@ -398,7 +409,10 @@ bool SkeletonMesh::LoadDataFromFlie(const std::string& filePath)
 
 		m_gloabInverseTransform = AiMatrixToXMFLOAT4x4(m_assimpScene->mRootNode->mTransformation.Inverse());
 
+		m_meshSections.push_back(std::move(newMeshSection));
 	}
+
+	return true;
 }
 
 XMFLOAT4X4  SkeletonMesh::AiMatrixToXMFLOAT4x4(aiMatrix4x4 ai)
@@ -420,6 +434,7 @@ XMFLOAT4X4  SkeletonMesh::AiMatrixToXMFLOAT4x4(aiMatrix4x4 ai)
 	xm._42 = ai.d2;
 	xm._43 = ai.d3;
 	xm._44 = ai.d4;
+
 	return xm;
 }
 
@@ -442,6 +457,7 @@ aiMatrix4x4 SkeletonMesh::XMFLOAT4x4ToAiMatrix(XMFLOAT4X4 xm)
 	ai.d2 = xm._42;
 	ai.d3 = xm._43;
 	ai.d4 = xm._44;
+
 	return ai;
 }
 
@@ -451,7 +467,7 @@ void  SkeletonMesh::BoneTransform(float TimeInSeconds, vector<XMFLOAT4X4>& trans
 	XMMATRIX temp = XMMatrixIdentity();
 	XMStoreFloat4x4(&identify, temp);
 
-	float TickPerSecond = (float)m_assimpScene->mAnimations[0]->mTicksPerSecond != 0 ? m_assimpScene->mAnimations[0]->mTicksPerSecond : 25.0f;
+	float TickPerSecond = (float)m_assimpScene->mAnimations[0]->mTicksPerSecond != 0 ? static_cast<float>(m_assimpScene->mAnimations[0]->mTicksPerSecond) : 25.0f;
 	float TimeInTicks = (float)TimeInSeconds * TickPerSecond;
 	float AnimationTime = (float)fmod(TimeInTicks, m_assimpScene->mAnimations[0]->mDuration);
 
@@ -461,10 +477,14 @@ void  SkeletonMesh::BoneTransform(float TimeInSeconds, vector<XMFLOAT4X4>& trans
 
 	for (UINT i = 0; i < m_numBones; i++) 
 	{
+		//m_calculatedBoneTransforms[i] = m_boneInfo[i].finalTransformation;
 		m_calculatedBoneTransforms[i] = m_boneInfo[i].finalTransformation;
+	/*	Get Bone Pose
+		
+		XMMATRIX indentity = XMMatrixIdentity();
+		XMStoreFloat4x4(&m_calculatedBoneTransforms[i], indentity);
+	*/
 	}
-	
-
 }
 
 void SkeletonMesh::ReadNodeHierarchy(float AnimationTime, const aiNode* pNode, const XMFLOAT4X4& ParentTransform)
@@ -492,6 +512,7 @@ void SkeletonMesh::ReadNodeHierarchy(float AnimationTime, const aiNode* pNode, c
 		nodeTransformation = TranslationXM * RotationM * ScalingM;
 
 	}
+
 	aiMatrix4x4 parentTransformAi = XMFLOAT4x4ToAiMatrix(ParentTransform);
 	aiMatrix4x4 gloabTransformAI = parentTransformAi * nodeTransformation;
 	XMFLOAT4X4 gloabTransform = AiMatrixToXMFLOAT4x4(gloabTransformAI);
@@ -516,15 +537,17 @@ void SkeletonMesh::ReadNodeHierarchy(float AnimationTime, const aiNode* pNode, c
 
 void SkeletonMesh::CalcInterpolatedRotation(aiQuaternion& Out, float AnimationTime, const aiNodeAnim* pNodeAnim)
 {
-	if (pNodeAnim->mNumRotationKeys == 1) {
+	if (pNodeAnim->mNumRotationKeys == 1) 
+	{
 		Out = pNodeAnim->mRotationKeys[0].mValue;
+
 		return;
 	}
 
 	UINT RotationIndex = FindRotation(AnimationTime, pNodeAnim);
 	UINT NextRotationIndex = (RotationIndex + 1);
 	//assert(NextRotationIndex < pNodeAnim->mNumRotationKeys);
-	float DeltaTime = pNodeAnim->mRotationKeys[NextRotationIndex].mTime - pNodeAnim->mRotationKeys[RotationIndex].mTime;
+	float DeltaTime = static_cast<float>(pNodeAnim->mRotationKeys[NextRotationIndex].mTime - pNodeAnim->mRotationKeys[RotationIndex].mTime);
 	float Factor = (AnimationTime - (float)pNodeAnim->mRotationKeys[RotationIndex].mTime) / DeltaTime;
 	//assert(Factor >= 0.0f && Factor <= 1.0f);
 	const aiQuaternion& StartRotationQ = pNodeAnim->mRotationKeys[RotationIndex].mValue;
@@ -536,33 +559,39 @@ void SkeletonMesh::CalcInterpolatedRotation(aiQuaternion& Out, float AnimationTi
 UINT SkeletonMesh::FindRotation(float AnimationTime, const aiNodeAnim* pNodeAnim)
 {
 	assert(pNodeAnim->mNumRotationKeys > 0);
-	for (UINT i = 0; i < pNodeAnim->mNumRotationKeys - 1; i++) {
-		if (AnimationTime < (float)pNodeAnim->mRotationKeys[i + 1].mTime) {
+	for (UINT i = 0; i < pNodeAnim->mNumRotationKeys - 1; i++)
+	{
+		if (AnimationTime < (float)pNodeAnim->mRotationKeys[i + 1].mTime) 
+		{
 			return i;
 		}
 	}
-	//assert(0);
+
 	return 0;
 }
 
 aiNodeAnim* SkeletonMesh::FindNodeAnim(const aiAnimation* Animation, string nodeName)
 {
-	for (int i = 0; i < Animation->mNumChannels; i++)
+	for (unsigned int i = 0; i < Animation->mNumChannels; i++)
 	{
 		if (Animation->mChannels[i]->mNodeName.data == nodeName)
 		{
 			return Animation->mChannels[i];
 		}
 	}
+
 	return nullptr;
 }
 
 void SkeletonMesh::CalcInterpolatedScaling(aiVector3D& Out, float AnimationTime, const aiNodeAnim* pNodeAnim)
 {
-	if (pNodeAnim->mNumScalingKeys == 1) {
+	if (pNodeAnim->mNumScalingKeys == 1) 
+	{
 		Out = pNodeAnim->mScalingKeys[0].mValue;
+
 		return;
 	}
+
 	//           deltaTime
 	//key1-----------------------------key2
 	//Factor =   key2 - key1 /DeltaTime  = 0.5
@@ -600,13 +629,13 @@ void SkeletonMesh::CalcInterpolatedPosition(aiVector3D& Out, float AnimationTime
 
 UINT SkeletonMesh::FindPosition(float AnimationTime, const aiNodeAnim* pNodeAnim)
 {
-	for (UINT i = 0; i < pNodeAnim->mNumPositionKeys - 1; i++) {
-		if (AnimationTime < (float)pNodeAnim->mPositionKeys[i + 1].mTime) {
+	for (UINT i = 0; i < pNodeAnim->mNumPositionKeys - 1; i++)
+	{
+		if (AnimationTime < (float)pNodeAnim->mPositionKeys[i + 1].mTime) 
+		{
 			return i;
 		}
 	}
-
-	//assert(0);
 
 	return 0;
 }
@@ -614,14 +643,13 @@ UINT SkeletonMesh::FindPosition(float AnimationTime, const aiNodeAnim* pNodeAnim
 UINT SkeletonMesh::FindScaling(float AnimationTime, const aiNodeAnim* pNodeAnim)
 {
 	assert(pNodeAnim->mNumScalingKeys > 0);
-
-	for (UINT i = 0; i < pNodeAnim->mNumScalingKeys - 1; i++) {
-		if (AnimationTime < (float)pNodeAnim->mScalingKeys[i + 1].mTime) {
+	for (UINT i = 0; i < pNodeAnim->mNumScalingKeys - 1; i++) 
+	{
+		if (AnimationTime < (float)pNodeAnim->mScalingKeys[i + 1].mTime)
+		{
 			return i;
 		}
 	}
-
-	//assert(0);
 
 	return 0;
 }
@@ -633,6 +661,7 @@ aiMatrix4x4  SkeletonMesh::InitScaleTransform(float x, float y, float z)
 	result.b2 = y;
 	result.c3 = z;
 	result.d4 = 1;
+
 	return result;
 }
 
@@ -652,15 +681,17 @@ aiMatrix4x4  SkeletonMesh::InitTranslationTransform(float x, float y, float z)
 void SkeletonMesh::Draw(ID3D11DeviceContext* in_deviceContext,ID3D11InputLayout* inputLayout,ID3D11VertexShader* vShader,ID3D11PixelShader* pShader,UINT meshOffset)
 {
 	
-	
 }
 
 void SkeletonMesh::DrawAllMesh(ID3D11DeviceContext* in_deviceContext,ID3D11InputLayout* inputLayout,ID3D11VertexShader* vShader,ID3D11PixelShader* pShader, ConstantBuffer<ContantBuffer_VS>*in_cb_vs_vertexshader, const XMMATRIX& viewProjectionMatrix)
 {
 	cb_vertexshader = in_cb_vs_vertexshader;
 	UINT offset = 0;
+
 	//compute constantbuffer
-	cb_vertexshader->data.worldMat = XMMatrixScaling(0.01f,0.01f,0.01f);
+	cb_vertexshader->data.worldMat = XMMatrixScaling(0.01f, 0.01f, 0.01f);
+	//Scale Matrix
+	//XMMatrixScaling(0.01f,0.01f,0.01f);
 	cb_vertexshader->data.VPMat = viewProjectionMatrix;
 	cb_vertexshader->data.VPMat = XMMatrixTranspose(cb_vertexshader->data.VPMat);
 	for (UINT i = 0; i < m_numBones; i++)
@@ -674,7 +705,11 @@ void SkeletonMesh::DrawAllMesh(ID3D11DeviceContext* in_deviceContext,ID3D11Input
 	cb_vertexshader->ApplyChanges();
 
 	in_deviceContext->VSSetConstantBuffers(0, 1, cb_vertexshader->GetAddressOf());
-	in_deviceContext->IASetVertexBuffers(0, 1, m_meshSection.m_vertexBuffer.GetAddressOf(), &m_vertexStride, &offset);
-	in_deviceContext->IASetIndexBuffer(m_meshSection.m_indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-	in_deviceContext->DrawIndexed(m_meshSection.m_indices.size(), 0, 0);
+
+	for (MeshSection& meshSection : m_meshSections)
+	{
+		in_deviceContext->IASetVertexBuffers(0, 1, meshSection.m_vertexBuffer.GetAddressOf(), &(meshSection.m_vertexDataStride), &offset);
+		in_deviceContext->IASetIndexBuffer(meshSection.m_indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+		in_deviceContext->DrawIndexed(static_cast<UINT>(meshSection.m_indices.size()), 0, 0);
+	}
 }

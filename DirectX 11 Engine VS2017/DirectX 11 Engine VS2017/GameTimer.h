@@ -1,32 +1,34 @@
+#pragma once
 
-#ifndef GAMETIMER_H
-#define GAMETIMER_H
+#include <stdint.h>
 #include <chrono>
+
 class GameTimer
 {
 public:
 	GameTimer();
+	~GameTimer() = default;
 
-	float TotalTime()const;		// 总游戏时间
-	float DeltaTime()const;		// 帧间隔时间
+	void Reset();
+	void Start();
+	void Stop();
+	bool IsStopped();
 
-	void Reset();               // 在消息循环之前调用
-	void Start();               // 在取消暂停的时候调用
-	void Stop();                // 在暂停的时候调用
-	void Tick();                // 在每一帧的时候调用
-	double GetMilisecondsElapsed();//获取毫秒数
+	float GetDeltaTime() const; //In seconds.
+	float GetTotalTime() const;
+	double GetMilisecondsElapsed();//get milliseconds
 
+	void Tick();
 private:
-	double m_SecondsPerCount;
-	double m_DeltaTime;
+	double m_performanceCountPeriod;    //In seconds.
+	double m_deltaTime;
+	uint64_t m_atStart;
+	uint64_t m_accumulationWhenPaused;
+	uint64_t m_atStop;
+	uint64_t m_last;
+	uint64_t m_current;
+	bool m_bIsStopped;
 
-	__int64 m_BaseTime;
-	__int64 m_PausedTime;
-	__int64 m_StopTime;
-	__int64 m_PrevTime;
-	__int64 m_CurrTime;
-	bool isrunning = false;
-	bool m_Stopped;
 #ifdef _WIN32
 	std::chrono::time_point<std::chrono::steady_clock> start;
 	std::chrono::time_point<std::chrono::steady_clock> stop;
@@ -34,7 +36,4 @@ private:
 	std::chrono::time_point<std::chrono::system_clock> start;
 	std::chrono::time_point<std::chrono::system_clock> stop;
 #endif
-
 };
-
-#endif // GAMETIMER_H
