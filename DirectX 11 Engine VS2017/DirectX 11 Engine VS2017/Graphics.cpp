@@ -58,20 +58,20 @@ void Graphics::RenderFrame()
 
 	//Draw Text
 	
-	//static int fpsCounter = 0;
-	//static std::string fpsString = "FPS = 0";
-	//fpsCounter += 1;
-	//if (fpsTimer.GetMilisecondsElapsed() > 1000.0)
-	//{
-	//	fpsString = "FPS : " + std::to_string(fpsCounter);
-	//	fpsCounter = 0;
-	//	fpsTimer.Reset();
-	//}
+	static int fpsCounter = 0;
+	static std::string fpsString = "FPS = 0";
+	fpsCounter += 1;
+	if (fpsTimer.GetMilisecondsElapsed() > 1000.0)
+	{
+		fpsString = "FPS : " + std::to_string(fpsCounter);
+		fpsCounter = 0;
+		fpsTimer.Reset();
+	}
 
-	//spriteBatch->Begin();
-	//spriteFont->DrawString(spriteBatch.get(), StringConverter::StringToWide(fpsString).c_str(), DirectX::XMFLOAT2(0, 0), DirectX::Colors::Red, 0.0f, DirectX::XMFLOAT2(0.0f, 0.0f), DirectX::XMFLOAT2(1.0f, 1.0f));
-	////spriteFont->DrawString(spriteBatch.get(), (std::string) adapater (AdapterReader::GetAdapters().begin(), AdapterReader::GetAdapters().end()), DirectX::XMFLOAT2(3, 0), DirectX::Colors::Red, 0.0f, DirectX::XMFLOAT2(0.0f, 0.0f), DirectX::XMFLOAT2(1.0f, 1.0f));
-	//spriteBatch->End();
+	spriteBatch->Begin();
+	spriteFont->DrawString(spriteBatch.get(), StringConverter::StringToWide(fpsString).c_str(), DirectX::XMFLOAT2(0, 0), DirectX::Colors::Red, 0.0f, DirectX::XMFLOAT2(0.0f, 0.0f), DirectX::XMFLOAT2(1.0f, 1.0f));
+	//spriteFont->DrawString(spriteBatch.get(), (std::string) adapater (AdapterReader::GetAdapters().begin(), AdapterReader::GetAdapters().end()), DirectX::XMFLOAT2(3, 0), DirectX::Colors::Red, 0.0f, DirectX::XMFLOAT2(0.0f, 0.0f), DirectX::XMFLOAT2(1.0f, 1.0f));
+	spriteBatch->End();
 	this->swapChain->Present(1, NULL);
 }
 
@@ -307,8 +307,8 @@ bool Graphics::InitializeScene()
 	//	return false;
 	//}
 
-	staMesh.Initialize("..\\DirectX 11 Engine VS2017\\Data\\BodyBlock.fbx", m_device.Get(), deviceContext.Get(), myTexture.Get(), &cb_vs_vertexshader);
-	skeletonMesh.InitializeSkinModel("..\\DirectX 11 Engine VS2017\\Data\\BodyBlock.fbx", m_device.Get());
+	staMesh.Initialize("..\\DirectX 11 Engine VS2017\\Data\\Fixed.fbx", m_device.Get(), deviceContext.Get(), myTexture.Get(), &cb_vs_vertexshader);
+	skeletonMesh.InitializeSkinModel("..\\DirectX 11 Engine VS2017\\Data\\Fixed.fbx", m_device.Get());
 	//Initialize Font
 	spriteBatch = std::make_unique<DirectX::SpriteBatch>(this->deviceContext.Get());
 	spriteFont = std::make_unique<DirectX::SpriteFont>(this->m_device.Get(), L"..\\DirectX 11 Engine VS2017\\Data\\myFont.spritefont");

@@ -161,6 +161,8 @@ protected:
 	//vector<MeshSection> meshSection;
 	MeshSection m_meshSection;
 
+	//vector<std::shared_ptr<MeshSection>> m_meshSection;
+
 	XMFLOAT4X4 m_gloabInverseTransform;
 
 };

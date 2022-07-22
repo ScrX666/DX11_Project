@@ -2,7 +2,7 @@ cbuffer SkinningTransforms : register(b0)
 {
     matrix WorldMatrix;
     matrix ViewProjMatrix;
-    matrix transfomMat[6];
+    matrix transfomMat[256];
 };
 
 Texture2D ColorTexture : register(t0);
@@ -11,7 +11,7 @@ SamplerState LinearSampler : register(s0);
 struct VS_INPUT
 {
     float3 position : POSITION;
-    int4 bone : BONEINDICES;
+    uint4 bone : BONEINDICES;
     float4 weights : BONEWEIGHTS;
     float3 normal : NORMAL;
     float2 tex : TEXCOORD;
