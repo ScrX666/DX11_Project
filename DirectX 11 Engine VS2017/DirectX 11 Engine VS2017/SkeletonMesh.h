@@ -27,10 +27,12 @@ class SkeletonMesh
 	struct SkinnedVertexIn
 	{
 		XMFLOAT3 pos;
+		XMUINT4 boneIndiecs;
+		XMFLOAT4 weights;
 		XMFLOAT3 normal;
 		XMFLOAT2 uv;
-		XMFLOAT4 weights;
-		XMUINT4 boneIndiecs;
+		
+		
 	};
 	struct VertexPosNormalTex
 	{
@@ -65,8 +67,7 @@ class SkeletonMesh
 	};
 	struct MeshSection
 	{
-		vector<VertexPosNormalTex> m_vertexs;
-		vector<SkinnedVertexIn> m_verteiceWithSkinnedAnimation;
+		vector<SkinnedVertexIn> m_vertexs;
 		vector<UINT> m_indices;
 		ComPtr<ID3D11Buffer> m_vertexBuffer;
 		ComPtr<ID3D11Buffer> m_indexBuffer;
@@ -106,12 +107,17 @@ public:
 	aiMatrix4x4  InitTranslationTransform(float x, float y, float z);
 
 	void Draw(ID3D11DeviceContext* deviceContext,ID3D11InputLayout* inputLayout,ID3D11VertexShader* vShader,ID3D11PixelShader* pShader,UINT meshOffset);
-	void DrawAllMesh(ID3D11DeviceContext* deviceContext,ID3D11InputLayout* inputLayout,ID3D11VertexShader* vShader,ID3D11PixelShader* pShader);
+	void DrawAllMesh(ID3D11DeviceContext* deviceContext,ID3D11InputLayout* inputLayout,ID3D11VertexShader* vShader,ID3D11PixelShader* pShader, ConstantBuffer<ContantBuffer_VS>* cb_vs_vertexshader, const XMMATRIX& viewProjectionMatrix);
 
+
+public:
+	ConstantBuffer<ContantBuffer_VS> *cb_vertexshader;
+	unsigned int m_numBones;
+	vector<XMFLOAT4X4> m_calculatedBoneTransforms;
 
 protected:
 	Assimp::Importer m_importer;
-	const aiScene* m_aiScene;
+	const aiScene* m_assimpScene;
 	UINT m_ID;
 	UINT m_vertexStart;
 	UINT m_vetexCount;
@@ -155,8 +161,6 @@ protected:
 	//vector<MeshSection> meshSection;
 	MeshSection m_meshSection;
 
-	unsigned int m_numBones;
 	XMFLOAT4X4 m_gloabInverseTransform;
-	vector<XMFLOAT4X4> m_calculatedBoneTransforms;
 
 };

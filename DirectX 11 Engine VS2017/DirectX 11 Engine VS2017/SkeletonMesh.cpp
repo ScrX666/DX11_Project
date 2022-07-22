@@ -111,7 +111,7 @@ bool SkeletonMesh::CreateVertexBuffer(ID3D11Device* device)
 	D3D11_BUFFER_DESC vertexBufferDesc;
 	ZeroMemory(&vertexBufferDesc, sizeof(vertexBufferDesc));
 	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	vertexBufferDesc.ByteWidth = sizeof(SkinnedVertexIn) * m_meshSection.m_verteiceWithSkinnedAnimation.size();
+	vertexBufferDesc.ByteWidth = sizeof(SkinnedVertexIn) * m_meshSection.m_vertexs.size();
 	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vertexBufferDesc.CPUAccessFlags = 0;
 	vertexBufferDesc.MiscFlags = 0;
@@ -119,8 +119,8 @@ bool SkeletonMesh::CreateVertexBuffer(ID3D11Device* device)
 
 	D3D11_SUBRESOURCE_DATA vertexData;
 	ZeroMemory(&vertexData, sizeof(D3D11_SUBRESOURCE_DATA));
-	vertexData.pSysMem = m_meshSection.m_verteiceWithSkinnedAnimation.data();
-
+	vertexData.pSysMem = m_meshSection.m_vertexs.data();
+	
 
 	if (device == nullptr)
 	{
@@ -162,25 +162,25 @@ bool SkeletonMesh::InitializeSkinModel(std::string in_filePath, ID3D11Device *in
 
 bool SkeletonMesh::LoadDataFromFlie(const std::string& filePath)
 {
-	Assimp::Importer assimpImporter;
-	unsigned int importingFlags = aiProcess_FlipUVs || aiProcess_Triangulate;
-	const aiScene* assimpScene = assimpImporter.ReadFile(filePath, importingFlags);
+	//aiProcess_FlipUVs ||
+	unsigned int importingFlags =  aiProcess_Triangulate;
+	m_assimpScene = m_importer.ReadFile(filePath, importingFlags);
 
-	if (assimpScene == nullptr)
+	if (m_assimpScene == nullptr)
 	{
 		// TODO: Handle error here.
 
 		return false;
 	}
 
-	if (assimpScene->mFlags == AI_SCENE_FLAGS_INCOMPLETE)
+	if (m_assimpScene->mFlags == AI_SCENE_FLAGS_INCOMPLETE)
 	{
 		// TODO: Handle error here.
 
 		return false;
 	}
 
-	if (assimpScene->mRootNode == nullptr)
+	if (m_assimpScene->mRootNode == nullptr)
 	{
 		// TODO: Handle error here.
 
@@ -188,24 +188,24 @@ bool SkeletonMesh::LoadDataFromFlie(const std::string& filePath)
 	}
 
 
-	aiMatrix4x4 tempGloabTransform = assimpScene->mRootNode->mTransformation;
+	aiMatrix4x4 tempGloabTransform = m_assimpScene->mRootNode->mTransformation;
 	tempGloabTransform = tempGloabTransform.Inverse();
 	m_gloabInverseTransform = AiMatrixToXMFLOAT4x4(tempGloabTransform);
 
 	UINT maxNum = 0;
-	for (int i = 0; i < assimpScene->mNumMeshes; i++)
+	for (int i = 0; i < m_assimpScene->mNumMeshes; i++)
 	{
-		if (assimpScene->mMeshes[i]->mNumVertices > maxNum)
+		if (m_assimpScene->mMeshes[i]->mNumVertices > maxNum)
 		{
-			maxNum = assimpScene->mMeshes[i]->mNumVertices;
+			maxNum = m_assimpScene->mMeshes[i]->mNumVertices;
 		}
 	}
 	m_bones.resize(maxNum);
 
 
-	for (int i = 0; i < assimpScene->mNumMeshes; i++)
+	for (int i = 0; i < m_assimpScene->mNumMeshes; i++)
 	{
-		aiMesh* aimesh = assimpScene->mMeshes[i];
+		aiMesh* aimesh = m_assimpScene->mMeshes[i];
 
 		vector<XMFLOAT4X4> boneOffset;
 		vector<int> boneToParentIndex;
@@ -232,13 +232,13 @@ bool SkeletonMesh::LoadDataFromFlie(const std::string& filePath)
 			}
 			//TODO add bone indicies and weights
 
-			m_meshSection.m_verteiceWithSkinnedAnimation.push_back(temp);
+			m_meshSection.m_vertexs.push_back(temp);
 		}
 
-		for (DWORD j = 0; j < aimesh->mNumFaces; j++)
+		for (UINT j = 0; j < aimesh->mNumFaces; j++)
 		{
 			aiFace face = aimesh->mFaces[j];
-			for (DWORD k = 0; k < face.mNumIndices; k++)
+			for (UINT k = 0; k < face.mNumIndices; k++)
 			{
 				m_meshSection.m_indices.push_back(face.mIndices[k]);
 			}
@@ -246,11 +246,12 @@ bool SkeletonMesh::LoadDataFromFlie(const std::string& filePath)
 
 
 
-		UINT AllVertexCount = 0;
-		for (int vc = 0; vc < m_meshTable.size(); vc++)
+		//UINT AllVertexCount = 0;
+		UINT AllVertexCount = m_meshSection.m_vertexs.size();
+		/*for (int vc = 0; vc < m_meshTable.size(); vc++)
 		{
 			AllVertexCount += m_meshTable[vc]->m_vetexCount;
-		}
+		}*/
 
 		if (m_bones.size() < AllVertexCount + aimesh->mNumVertices)
 		{
@@ -303,12 +304,12 @@ bool SkeletonMesh::LoadDataFromFlie(const std::string& filePath)
 				tempFloat.z = m_bones[AllVertexCount + j].weights[2];
 				tempFloat.w = m_bones[AllVertexCount + j].weights[3];
 
-				m_meshSection.m_verteiceWithSkinnedAnimation[j].boneIndiecs = tempUint;
-				m_meshSection.m_verteiceWithSkinnedAnimation[j].weights = tempFloat;
+				m_meshSection.m_vertexs[j].boneIndiecs = tempUint;
+				m_meshSection.m_vertexs[j].weights = tempFloat;
 			}
 		}
 
-		aiNode* sceneRootNode = assimpScene->mRootNode;
+		aiNode* sceneRootNode = m_assimpScene->mRootNode;
 		//m_aiNode.push_back(sceneRootNode);
 		for (int f = 0; f < aimesh->mNumBones; f++)
 		{
@@ -394,7 +395,7 @@ bool SkeletonMesh::LoadDataFromFlie(const std::string& filePath)
 			}
 		}
 
-		m_gloabInverseTransform = AiMatrixToXMFLOAT4x4(assimpScene->mRootNode->mTransformation.Inverse());
+		m_gloabInverseTransform = AiMatrixToXMFLOAT4x4(m_assimpScene->mRootNode->mTransformation.Inverse());
 
 	}
 }
@@ -449,9 +450,9 @@ void  SkeletonMesh::BoneTransform(float TimeInSeconds, vector<XMFLOAT4X4>& trans
 	XMMATRIX temp = XMMatrixIdentity();
 	XMStoreFloat4x4(&identify, temp);
 
-	float TickPerSecond = (float)m_aiScene->mAnimations[0]->mTicksPerSecond != 0 ? m_aiScene->mAnimations[0]->mTicksPerSecond : 25.0f;
+	float TickPerSecond = (float)m_assimpScene->mAnimations[0]->mTicksPerSecond != 0 ? m_assimpScene->mAnimations[0]->mTicksPerSecond : 25.0f;
 	float TimeInTicks = (float)TimeInSeconds * TickPerSecond;
-	float AnimationTime = (float)fmod(TimeInTicks, m_aiScene->mAnimations[0]->mDuration);
+	float AnimationTime = (float)fmod(TimeInTicks, m_assimpScene->mAnimations[0]->mDuration);
 
 	ReadNodeHierarchy(AnimationTime, m_aiNode[0], identify);
 
@@ -461,13 +462,14 @@ void  SkeletonMesh::BoneTransform(float TimeInSeconds, vector<XMFLOAT4X4>& trans
 	{
 		m_calculatedBoneTransforms[i] = m_boneInfo[i].finalTransformation;
 	}
+	
 
 }
 
 void SkeletonMesh::ReadNodeHierarchy(float AnimationTime, const aiNode* pNode, const XMFLOAT4X4& ParentTransform)
 {
 	string nodeName = pNode->mName.data;
-	const aiAnimation* pAnimation = m_aiScene->mAnimations[0];
+	const aiAnimation* pAnimation = m_assimpScene->mAnimations[0];
 	aiMatrix4x4 nodeTransformation = pNode->mTransformation;
 
 	const aiNodeAnim* pNodeAnim = FindNodeAnim(pAnimation, nodeName);
@@ -648,14 +650,30 @@ aiMatrix4x4  SkeletonMesh::InitTranslationTransform(float x, float y, float z)
 
 void SkeletonMesh::Draw(ID3D11DeviceContext* in_deviceContext,ID3D11InputLayout* inputLayout,ID3D11VertexShader* vShader,ID3D11PixelShader* pShader,UINT meshOffset)
 {
-	UINT offset = 0;
-
+	
 	
 }
 
-void SkeletonMesh::DrawAllMesh(ID3D11DeviceContext* in_deviceContext,ID3D11InputLayout* inputLayout,ID3D11VertexShader* vShader,ID3D11PixelShader* pShader)
+void SkeletonMesh::DrawAllMesh(ID3D11DeviceContext* in_deviceContext,ID3D11InputLayout* inputLayout,ID3D11VertexShader* vShader,ID3D11PixelShader* pShader, ConstantBuffer<ContantBuffer_VS>*in_cb_vs_vertexshader, const XMMATRIX& viewProjectionMatrix)
 {
-	in_deviceContext->IASetVertexBuffers(0, 1, m_meshSection.m_vertexBuffer.GetAddressOf(), &m_vertexStride, 0);
+	cb_vertexshader = in_cb_vs_vertexshader;
+	UINT offset = 0;
+	//compute constantbuffer
+	cb_vertexshader->data.worldMat = XMMatrixIdentity();
+	cb_vertexshader->data.VPMat = viewProjectionMatrix;
+	cb_vertexshader->data.VPMat = XMMatrixTranspose(cb_vertexshader->data.VPMat);
+	for (UINT i = 0; i < m_numBones; i++)
+	{
+
+		XMMATRIX XmTransforms = XMLoadFloat4x4(&m_calculatedBoneTransforms[i]);
+		//XmTransforms = XMMatrixTranspose(XmTransforms);
+		cb_vertexshader->data.transfomMat[i] = XmTransforms;
+
+	}
+	cb_vertexshader->ApplyChanges();
+
+	in_deviceContext->VSSetConstantBuffers(0, 1, cb_vertexshader->GetAddressOf());
+	in_deviceContext->IASetVertexBuffers(0, 1, m_meshSection.m_vertexBuffer.GetAddressOf(), &m_vertexStride, &offset);
 	in_deviceContext->IASetIndexBuffer(m_meshSection.m_indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 	in_deviceContext->DrawIndexed(m_meshSection.m_indices.size(), 0, 0);
 }

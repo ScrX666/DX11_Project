@@ -103,26 +103,26 @@ void Engine::Update()
 
 	
 	//**************************
-	//vector<XMFLOAT4X4> arBoneMatrixs;
-	//
-	//
-	//float runningTime = 1;//timer.TotalTime();
+	vector<XMFLOAT4X4> arBoneMatrixs;
+	
+	
+	float runningTime = 1;//timer.TotalTime();
 
-	//double perFrameTime = 1.0f / 60.0f;
-	//float currentFrames = runningTime / perFrameTime;
+	double perFrameTime = 1.0f / 60.0f;
+	float currentFrames = runningTime / perFrameTime;
 
-	////calculate bone animation
-	//gfx.model.BoneTransform(runningTime, arBoneMatrixs);
-	//
-	//for (UINT i = 0; i < gfx.model.m_numBones; i++)
+	//calculate bone animation
+	gfx.skeletonMesh.BoneTransform(runningTime, gfx.skeletonMesh.m_calculatedBoneTransforms);
+	
+	//for (UINT i = 0; i < gfx.skeletonMesh.m_numBones; i++)
 	//{
 
-	//	XMMATRIX XmTransforms = XMLoadFloat4x4(&gfx.model.m_calculatedBoneTransforms[i]);
+	//	XMMATRIX XmTransforms = XMLoadFloat4x4(&gfx.skeletonMesh.m_calculatedBoneTransforms[i]);
 	//	//XmTransforms = XMMatrixTranspose(XmTransforms);
-	//	gfx.model.m_VSConstantBuffer->data.transfomMat[i] = XmTransforms;
+	//	gfx.skeletonMesh.cb_vertexshader->data.transfomMat[i] = XmTransforms;
 	//	
 	//}
-	//CopyMemory(m_cBufferFrequently.data.transfomMat, arBoneMatrixs.data(), arBoneMatrixs.size() * sizeof(arBoneMatrixs[0]));
+	//CopyMemory(m_cBufferFrequently.data.transfomMat, gfx.skeletonMesh.m_calculatedBoneTransforms.data(), arBoneMatrixs.size() * sizeof(arBoneMatrixs[0]));
 	
 }
  

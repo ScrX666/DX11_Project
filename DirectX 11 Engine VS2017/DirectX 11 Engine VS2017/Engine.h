@@ -13,21 +13,10 @@ public:
 public:
 	static Engine& Get();
 
-	struct CBufferReFreashFrequently
-	{
-		DirectX::XMMATRIX boneTransform[100];
-	};
-
-
-	struct CBufferReFreshOnResize
-	{
-		DirectX::XMMATRIX proj;
-	};
 
 private:
 	Timer timer;
 	Camera camera;
-	//ConstantBuffer <CBufferReFreashFrequently> m_cBufferFrequently;
 	ConstantBuffer <ContantBuffer_VS> m_cBufferFrequently;
 	
 };

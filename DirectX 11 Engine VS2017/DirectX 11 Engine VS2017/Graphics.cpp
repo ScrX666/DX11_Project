@@ -52,7 +52,7 @@ void Graphics::RenderFrame()
 		//this->model.DrawMVP(camera.GetViewMatrix() * camera.GetProjectionMatrix(), deviceContext.Get());
 		staMesh.SetConstantBuffer(camera.GetViewMatrix() * camera.GetProjectionMatrix());
 		//staMesh.Draw();
-		skeletonMesh.DrawAllMesh(deviceContext.Get(), inputLayout.Get(), vertexShader.GetShader(), pixelShader.GetShader());
+		skeletonMesh.DrawAllMesh(deviceContext.Get(), inputLayout.Get(), vertexShader.GetShader(), pixelShader.GetShader(), &cb_vs_vertexshader, camera.GetViewMatrix() * camera.GetProjectionMatrix());
 		
 	}
 

@@ -25,11 +25,12 @@ VS_OUTPUT VSMAIN(in VS_INPUT input)
 {
     VS_OUTPUT output;
 // Calculate the output position of the vertex
-    output.position = float4(input.position, 1.0f);
-    output.position += float4(input.position, 1.0f);
-    //output.position = (mul(float4(input.position, 1.0f), transfomMat[input.bone.x]) * input.weights.x);
-    //output.position += (mul(float4(input.position, 1.0f), transfomMat[input.bone.y]) * input.weights.y);
-    
+    //output.position = float4(input.position, 1.0f);
+    //output.position += float4(input.position, 1.0f);
+    output.position = (mul(float4(input.position, 1.0f), transfomMat[input.bone.x]) * input.weights.x);
+    output.position += (mul(float4(input.position, 1.0f), transfomMat[input.bone.y]) * input.weights.y);
+    output.position += (mul(float4(input.position, 1.0f), transfomMat[input.bone.z]) * input.weights.z);
+    output.position += (mul(float4(input.position, 1.0f), transfomMat[input.bone.w]) * input.weights.w);
 // Transform world position with viewprojection matrix
     output.position = mul(output.position, WorldMatrix);
     output.position = mul(output.position, ViewProjMatrix);

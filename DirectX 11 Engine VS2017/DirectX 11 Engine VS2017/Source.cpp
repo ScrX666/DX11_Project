@@ -12,9 +12,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	{
 		while (engine.ProcessMessages() == true)
 		{
-			
-			engine.RenderFrame();
 			engine.Update();
+			engine.RenderFrame();
+
 		}
 	}
 	return 0;
