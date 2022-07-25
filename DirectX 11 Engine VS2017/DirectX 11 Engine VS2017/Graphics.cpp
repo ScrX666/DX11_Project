@@ -28,7 +28,7 @@ void Graphics::RenderFrame()
 	
 
 	//background Color
-	float bgColor[] = { 0.0f, 0.8f, 0.8f, 1.0f };
+	float bgColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
 	//clear view
 	this->deviceContext->ClearRenderTargetView(this->renderTargetView.Get(), bgColor);
@@ -292,7 +292,7 @@ bool Graphics::InitializeScene()
 	//}
 
 
-	std::string modleFileName = ("Double Dagger Stab.fbx");
+	std::string modleFileName = ("Rumba Dancing.fbx");
 	std::string modleFilePath = ("..\\DirectX 11 Engine VS2017\\Data\\" + modleFileName);
 	staMesh.Initialize(modleFilePath, m_device.Get(), deviceContext.Get(), myTexture.Get(), &cb_vs_vertexshader);
 	skeletonMesh.InitializeSkinModel(modleFilePath, m_device.Get());

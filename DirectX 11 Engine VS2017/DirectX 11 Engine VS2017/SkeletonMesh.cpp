@@ -132,7 +132,7 @@ bool SkeletonMesh::CreateVertexBuffer(ID3D11Device* device)
 		HRESULT HR(device->CreateBuffer(&bufferDesc, &subResourceData, meshSection.m_vertexBuffer.GetAddressOf()));
 		if (FAILED(HR))
 		{
-			ErrorLogger::Log(("xxxxx"));
+			ErrorLogger::Log(("Create SkinModel Vertex Buffer Failed."));
 			return false;
 		}
 	}
@@ -160,7 +160,7 @@ bool SkeletonMesh::CreateIndexBuffer(ID3D11Device* device)
 		HRESULT HR(device->CreateBuffer(&bufferDesc, &subResourceData, meshSection.m_indexBuffer.GetAddressOf()));
 		if (FAILED(HR))
 		{
-			ErrorLogger::Log(("xxxxx"));
+			ErrorLogger::Log(("Create SkinModel Index Buffer Failed."));
 			return false;
 		}
 	}
@@ -379,7 +379,6 @@ bool SkeletonMesh::LoadDataFromFlie(const std::string& filePath)
 					newNode->mParent = tempFather;
 					for (unsigned int sonCount = 0; sonCount < newNode->mParent->mNumChildren; sonCount++)
 					{
-
 						string fatherName = newNode->mParent->mChildren[sonCount]->mName.C_Str();
 						string::size_type xb = fatherName.find(newNode->mName.C_Str());
 						if (xb != string::npos)
@@ -479,11 +478,11 @@ void  SkeletonMesh::BoneTransform(float TimeInSeconds, vector<XMFLOAT4X4>& trans
 	{
 		//m_calculatedBoneTransforms[i] = m_boneInfo[i].finalTransformation;
 		m_calculatedBoneTransforms[i] = m_boneInfo[i].finalTransformation;
-	/*	Get Bone Pose
+		//Get Bone Pose
 		
-		XMMATRIX indentity = XMMatrixIdentity();
-		XMStoreFloat4x4(&m_calculatedBoneTransforms[i], indentity);
-	*/
+		//XMMATRIX identity = XMMatrixIdentity();
+		//XMStoreFloat4x4(&m_calculatedBoneTransforms[i], identity);
+	
 	}
 }
 
@@ -509,7 +508,7 @@ void SkeletonMesh::ReadNodeHierarchy(float AnimationTime, const aiNode* pNode, c
 		CalcInterpolatedPosition(Translation, AnimationTime, pNodeAnim);
 		aiMatrix4x4  TranslationXM = InitTranslationTransform(Translation.x, Translation.y, Translation.z);
 
-		nodeTransformation = TranslationXM * RotationM * ScalingM;
+		nodeTransformation = ScalingM * RotationM * TranslationXM ;
 
 	}
 
