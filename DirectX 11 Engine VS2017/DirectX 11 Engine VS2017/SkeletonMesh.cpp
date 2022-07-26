@@ -223,6 +223,7 @@ bool SkeletonMesh::LoadDataFromFlie(const std::string& filePath)
 		MeshSection newMeshSection;
 
 		aiMesh* aimesh = m_assimpScene->mMeshes[i];
+		
 
 		vector<XMFLOAT4X4> boneOffset;
 		vector<int> boneToParentIndex;
@@ -247,6 +248,8 @@ bool SkeletonMesh::LoadDataFromFlie(const std::string& filePath)
 				temp.uv.y = aimesh->mTextureCoords[0][j].y;
 			}
 			//TODO add bone indicies and weights
+			
+
 
 			newMeshSection.m_vertexs.push_back(temp);
 		}
@@ -303,20 +306,28 @@ bool SkeletonMesh::LoadDataFromFlie(const std::string& filePath)
 				m_bones[VertexID].AddBoneData(boneIndex, Weight);
 			}
 
-			for (DWORD j = 0; j < aimesh->mNumVertices; j++)
+			for (DWORD j = 43079; j < aimesh->mNumVertices; j++)
 			{
 				XMFLOAT4 tempFloat;
-				tempFloat.x = m_bones[AllVertexCount + j].weights[0];
+				/*tempFloat.x = m_bones[AllVertexCount + j].weights[0];
 				tempFloat.y = m_bones[AllVertexCount + j].weights[1];
 				tempFloat.z = m_bones[AllVertexCount + j].weights[2];
-				tempFloat.w = m_bones[AllVertexCount + j].weights[3];
+				tempFloat.w = m_bones[AllVertexCount + j].weights[3];*/
 
+
+				newMeshSection.m_vertexs[j].weights.x = m_bones[AllVertexCount + j].weights[0];
+				newMeshSection.m_vertexs[j].weights.y = m_bones[AllVertexCount + j].weights[1];
+				newMeshSection.m_vertexs[j].weights.z = m_bones[AllVertexCount + j].weights[2];
+				newMeshSection.m_vertexs[j].weights.w = m_bones[AllVertexCount + j].weights[3];
+				
 				newMeshSection.m_vertexs[j].boneIndiecs[0] =  m_bones[AllVertexCount + j].iDs[0];
 				newMeshSection.m_vertexs[j].boneIndiecs[1] =  m_bones[AllVertexCount + j].iDs[1];
 				newMeshSection.m_vertexs[j].boneIndiecs[2] =  m_bones[AllVertexCount + j].iDs[2];
 				newMeshSection.m_vertexs[j].boneIndiecs[3] =  m_bones[AllVertexCount + j].iDs[3];
 
-				newMeshSection.m_vertexs[j].weights = tempFloat;
+				//newMeshSection.m_vertexs[j].weights = tempFloat;
+
+				//newMeshSection.m_vertexs.push_back(temp);
 			}
 		}
 
@@ -511,9 +522,10 @@ void SkeletonMesh::ReadNodeHierarchy(float AnimationTime, const aiNode* pNode, c
 		nodeTransformation = ScalingM * RotationM * TranslationXM ;
 
 	}
-
 	aiMatrix4x4 parentTransformAi = XMFLOAT4x4ToAiMatrix(ParentTransform);
 	aiMatrix4x4 gloabTransformAI = parentTransformAi * nodeTransformation;
+	//Use Assimp compute globTransform
+
 	XMFLOAT4X4 gloabTransform = AiMatrixToXMFLOAT4x4(gloabTransformAI);
 	XMMATRIX result;
 	if (m_boneMapping.find(nodeName) != m_boneMapping.end())
@@ -523,7 +535,8 @@ void SkeletonMesh::ReadNodeHierarchy(float AnimationTime, const aiNode* pNode, c
 		XMFLOAT4X4 gloabTransform = AiMatrixToXMFLOAT4x4(gloabTransformAI);
 		XMMATRIX gloabTransform_m = XMLoadFloat4x4(&gloabTransform);
 		XMMATRIX boneOffsetMatrixM = XMLoadFloat4x4(&m_boneInfo[BoneIndex].boneOffsetMatrix);
-
+		
+		XMMatrixTranspose(gloabTransform_m);
 		result = m_gloabInverseTransformM * gloabTransform_m * boneOffsetMatrixM;  //gloabToRoot * currentAnimaTransform * boneOffset
 		XMStoreFloat4x4(&m_boneInfo[BoneIndex].finalTransformation, result);
 	}
