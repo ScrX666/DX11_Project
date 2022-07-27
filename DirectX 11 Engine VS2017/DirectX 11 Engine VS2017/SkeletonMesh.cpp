@@ -265,13 +265,13 @@ bool SkeletonMesh::LoadDataFromFlie(const std::string& filePath)
 
 
 
-		//UINT AllVertexCount = 0;
-		UINT AllVertexCount = static_cast<UINT>(newMeshSection.m_vertexs.size());
-		/*for (int vc = 0; vc < m_meshTable.size(); vc++)
+		UINT AllVertexCount = 0;
+		//UINT AllVertexCount = static_cast<UINT>(newMeshSection.m_vertexs.size());
+		int vertexCount = 0;
+		for (int vc = 0; vc < m_assimpScene->mNumMeshes; vc++)
 		{
-			AllVertexCount += m_meshTable[vc]->m_vetexCount;
-		}*/
-
+			AllVertexCount += vertexCount;
+		}
 		if (m_bones.size() < AllVertexCount + aimesh->mNumVertices)
 		{
 			m_bones.resize(AllVertexCount + aimesh->mNumVertices);
@@ -279,6 +279,7 @@ bool SkeletonMesh::LoadDataFromFlie(const std::string& filePath)
 
 		for (UINT k = 0; k < aimesh->mNumBones; k++)
 		{
+
 			UINT boneIndex = 0;
 			string boneName = aimesh->mBones[k]->mName.data;
 
@@ -288,6 +289,7 @@ bool SkeletonMesh::LoadDataFromFlie(const std::string& filePath)
 				m_numBones++;
 				BoneInfo bi;
 				m_boneInfo.push_back(bi);
+
 			}
 			else
 			{
@@ -306,7 +308,7 @@ bool SkeletonMesh::LoadDataFromFlie(const std::string& filePath)
 				m_bones[VertexID].AddBoneData(boneIndex, Weight);
 			}
 
-			for (DWORD j = 43079; j < aimesh->mNumVertices; j++)
+			for (DWORD j = 0; j < aimesh->mNumVertices; j++)
 			{
 				XMFLOAT4 tempFloat;
 				/*tempFloat.x = m_bones[AllVertexCount + j].weights[0];
@@ -420,6 +422,7 @@ bool SkeletonMesh::LoadDataFromFlie(const std::string& filePath)
 		m_gloabInverseTransform = AiMatrixToXMFLOAT4x4(m_assimpScene->mRootNode->mTransformation.Inverse());
 
 		m_meshSections.push_back(std::move(newMeshSection));
+		vertexCount = aimesh->mNumVertices;
 	}
 
 	return true;
@@ -526,6 +529,9 @@ void SkeletonMesh::ReadNodeHierarchy(float AnimationTime, const aiNode* pNode, c
 	aiMatrix4x4 gloabTransformAI = parentTransformAi * nodeTransformation;
 	//Use Assimp compute globTransform
 
+
+
+
 	XMFLOAT4X4 gloabTransform = AiMatrixToXMFLOAT4x4(gloabTransformAI);
 	XMMATRIX result;
 	if (m_boneMapping.find(nodeName) != m_boneMapping.end())
@@ -536,8 +542,8 @@ void SkeletonMesh::ReadNodeHierarchy(float AnimationTime, const aiNode* pNode, c
 		XMMATRIX gloabTransform_m = XMLoadFloat4x4(&gloabTransform);
 		XMMATRIX boneOffsetMatrixM = XMLoadFloat4x4(&m_boneInfo[BoneIndex].boneOffsetMatrix);
 		
-		XMMatrixTranspose(gloabTransform_m);
 		result = m_gloabInverseTransformM * gloabTransform_m * boneOffsetMatrixM;  //gloabToRoot * currentAnimaTransform * boneOffset
+		//result = boneOffsetMatrixM;
 		XMStoreFloat4x4(&m_boneInfo[BoneIndex].finalTransformation, result);
 	}
 

@@ -27,7 +27,7 @@ VS_OUTPUT VSMAIN(in VS_INPUT input)
 // Calculate the output position of the vertex
     //output.position = float4(input.position, 1.0f);
     //output.position += float4(input.position, 1.0f);
-
+    
     
     output.position = (mul(float4(input.position, 1.0f), transfomMat[input.bone.x]) * input.weights.x);
     output.position += (mul(float4(input.position, 1.0f), transfomMat[input.bone.y]) * input.weights.y);
