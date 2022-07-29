@@ -28,7 +28,7 @@
 //{
 //
 //public:
-//	//·Ö×é
+//	//ï¿½ï¿½ï¿½ï¿½
 //	struct SkinnedVertexIn
 //	{
 //		DirectX::XMFLOAT3 pos;

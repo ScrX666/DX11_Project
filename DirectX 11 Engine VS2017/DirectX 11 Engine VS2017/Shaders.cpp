@@ -1,20 +1,20 @@
 #include "Shaders.h"
 
-bool VertexShader::Initialize(Microsoft::WRL::ComPtr<ID3D11Device>&device, std::wstring shaderpath)
+bool VertexShader::Initialize(ID3D11Device* in_device, const std::wstring& in_shaderFilepath)
 {
-	HRESULT hr = D3DReadFileToBlob(shaderpath.c_str(), this->shader_buffer.GetAddressOf());
+	HRESULT hr = D3DReadFileToBlob(in_shaderFilepath.c_str(), this->shader_buffer.GetAddressOf());
 	if (FAILED(hr))
 	{
 		std::wstring errorMsg = L"Failed to load shader";
-		errorMsg += shaderpath;
+		errorMsg += in_shaderFilepath;
 		ErrorLogger::Log(hr, errorMsg);
 		return false;
 	}
-	hr = device->CreateVertexShader(shader_buffer.Get()->GetBufferPointer(), shader_buffer->GetBufferSize(), NULL, shader.GetAddressOf());
+	hr = in_device->CreateVertexShader(shader_buffer.Get()->GetBufferPointer(), shader_buffer->GetBufferSize(), NULL, shader.GetAddressOf());
 	if (FAILED(hr))
 	{
 		std::wstring errorMsg = L"Failed to create vertex shader";
-		errorMsg += shaderpath;
+		errorMsg += in_shaderFilepath;
 		ErrorLogger::Log(hr, errorMsg);
 		return false;
 	}
@@ -35,21 +35,21 @@ ID3D10Blob* VertexShader::GetBuffer()
 
 
 //PixelShader
-bool PixelShader::Initialize(Microsoft::WRL::ComPtr<ID3D11Device>& device, std::wstring shaderpath)
+bool PixelShader::Initialize(ID3D11Device* in_device, const std::wstring& in_shaderFilepath)
 {
-	HRESULT hr = D3DReadFileToBlob(shaderpath.c_str(), this->shader_buffer.GetAddressOf());
+	HRESULT hr = D3DReadFileToBlob(in_shaderFilepath.c_str(), this->shader_buffer.GetAddressOf());
 	if (FAILED(hr))
 	{
 		std::wstring errorMsg = L"Failed to load shader";
-		errorMsg += shaderpath;
+		errorMsg += in_shaderFilepath;
 		ErrorLogger::Log(hr, errorMsg);
 		return false;
 	}
-	hr = device->CreatePixelShader(shader_buffer.Get()->GetBufferPointer(), shader_buffer->GetBufferSize(), NULL, shader.GetAddressOf());
+	hr = in_device->CreatePixelShader(shader_buffer.Get()->GetBufferPointer(), shader_buffer->GetBufferSize(), NULL, shader.GetAddressOf());
 	if (FAILED(hr))
 	{
 		std::wstring errorMsg = L"Failed to create pixel shader";
-		errorMsg += shaderpath;
+		errorMsg += in_shaderFilepath;
 		ErrorLogger::Log(hr, errorMsg);
 		return false;
 	}

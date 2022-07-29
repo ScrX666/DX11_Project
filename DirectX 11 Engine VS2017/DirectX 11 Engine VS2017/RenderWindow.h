@@ -10,6 +10,9 @@ public:
 	bool ProcessMessages();
 	~RenderWindow();
 	HWND GetWindowHandle() { return handle; }
+	int GetWindowWidth() { return width; }
+	int GetWindowHeight() { return height; }
+
 private:
 	void RegisterWindowClass();
 	HWND handle = NULL;
@@ -20,4 +23,5 @@ private:
 	std::wstring window_class_wide = L"";
 	int width = 0;
 	int height = 0;
+
 };

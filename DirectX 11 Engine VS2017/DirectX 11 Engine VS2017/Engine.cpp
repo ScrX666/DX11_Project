@@ -5,7 +5,7 @@
 
 bool Engine::Initialize( HINSTANCE hInstance, std::string window_title, std::string window_class, int width, int height)
 {
-	gtime.Start();
+	m_timer.Start();
 
 	bool InitializeWindowSuccessfully =	render_window.Initialize(hInstance, window_title, window_class, width, height);
 	if (!InitializeWindowSuccessfully)
@@ -19,14 +19,10 @@ bool Engine::Initialize( HINSTANCE hInstance, std::string window_title, std::str
 		return false;
 	}
 
-	//gfx.model.m_calculatedBoneTransforms.resize(gfx.model.m_numBones);
-	//gfx.model.BoneTransform(0.0f, gfx.model.m_calculatedBoneTransforms);;
-	//for (UINT i = 0; i < gfx.model.m_numBones; i++)
-	//{
-	//	m_cBufferFrequently.data.transfomMat[i] = XMLoadFloat4x4(&gfx.model.m_calculatedBoneTransforms[i]);
-	//}
 
-
+	m_camera.SetPosition(0.0f, 0.0f, -5.0f);
+	float aspectRatioOfCurrentWindow = static_cast<float>(render_window.GetWindowWidth()) / static_cast<float>(render_window.GetWindowHeight());
+	m_camera.SetProjectionValues(90.0f, aspectRatioOfCurrentWindow, 0.1f, 1000.0f);
 
 	return true;
 }
@@ -36,10 +32,8 @@ bool Engine::ProcessMessages()
 }
 void Engine::Update()
 {
-
-	gtime.Tick();
-	float deltaTime = gtime.GetMilisecondsElapsed();
-
+	m_timer.Tick();
+	float deltaTime = static_cast<float>(m_timer.GetMilisecondsElapsed());
 
 	while (!keyboard.CharBufferIsEmpty())
 	{
@@ -59,70 +53,47 @@ void Engine::Update()
 		{
 			if (me.GetType() == MouseEvent::EventType::RAW_MOVE)
 			{
-				this->gfx.camera.AdjustRotation((float)me.GetPosY() * 0.01f, (float)me.GetPosX() * 0.01f, 0);
+				m_camera.AdjustRotation((float)me.GetPosY() * 0.01f, (float)me.GetPosX() * 0.01f, 0);
 			}
 		}
 	}
 
-
 	const float cameraSpeed = 0.1f;
 	if (keyboard.KeyIsPressed('W'))
 	{
-		this->gfx.camera.AdjustPosition(this->gfx.camera.GetForwardVector() * cameraSpeed  );
+		m_camera.AdjustPosition(m_camera.GetForwardVector() * cameraSpeed);
 	}
 	if (keyboard.KeyIsPressed('A'))
 	{
-		this->gfx.camera.AdjustPosition(this->gfx.camera.GetLeftVector() * cameraSpeed );
+		m_camera.AdjustPosition(m_camera.GetLeftVector() * cameraSpeed);
 	}
 	if (keyboard.KeyIsPressed('S'))
 	{
-		this->gfx.camera.AdjustPosition(this->gfx.camera.GetBackwardVector() * cameraSpeed );
-		
+		m_camera.AdjustPosition(m_camera.GetBackwardVector() * cameraSpeed);
+
 	}
 	if (keyboard.KeyIsPressed('D'))
 	{
-		this->gfx.camera.AdjustPosition(this->gfx.camera.GetRightVector() * cameraSpeed );
+		m_camera.AdjustPosition(m_camera.GetRightVector() * cameraSpeed);
 	}
 	if (keyboard.KeyIsPressed('F'))
 	{
-		this->gfx.camera.AdjustPosition(0.0f, 0.0f, -0.5f);
-		this->gfx.camera.AdjustRotation(0.0f, 0.0f, 0.0f);
+		m_camera.AdjustPosition(0.0f, 0.0f, -0.5f);
+		m_camera.AdjustRotation(0.0f, 0.0f, 0.0f);
 	}
 	if (keyboard.KeyIsPressed('Q'))
 	{
-		this->gfx.camera.AdjustPosition(this->gfx.camera.GetUpVector() * cameraSpeed );
+		m_camera.AdjustPosition(m_camera.GetUpVector() * cameraSpeed);
 	}
 	if (keyboard.KeyIsPressed('E'))
 	{
-		this->gfx.camera.AdjustPosition(this->gfx.camera.GetUpVector() * cameraSpeed * -1 );
+		m_camera.AdjustPosition(m_camera.GetUpVector() * cameraSpeed * -1);
 	}
 	if (keyboard.KeyIsPressed(VK_SPACE))
 	{
-		this->gfx.camera.AdjustPosition(this->gfx.camera.GetUpVector() * cameraSpeed );
+		m_camera.AdjustPosition(m_camera.GetUpVector() * cameraSpeed);
 	}
 
-	
-	//**************************
-	vector<XMFLOAT4X4> arBoneMatrixs;
-	
-	
-	float runningTime = gtime.GetTotalTime();
-	double perFrameTime = 1.0f / 60.0f;
-	double currtFrame = runningTime / perFrameTime;
-
-	//calculate bone animation
-	gfx.skeletonMesh.BoneTransform(runningTime, gfx.skeletonMesh.m_calculatedBoneTransforms);
-	
-	//for (UINT i = 0; i < gfx.skeletonMesh.m_numBones; i++)
-	//{
-
-	//	XMMATRIX XmTransforms = XMLoadFloat4x4(&gfx.skeletonMesh.m_calculatedBoneTransforms[i]);
-	//	//XmTransforms = XMMatrixTranspose(XmTransforms);
-	//	gfx.skeletonMesh.cb_vertexshader->data.transfomMat[i] = XmTransforms;
-	//	
-	//}
-	//CopyMemory(m_cBufferFrequently.data.transfomMat, gfx.skeletonMesh.m_calculatedBoneTransforms.data(), arBoneMatrixs.size() * sizeof(arBoneMatrixs[0]));
-	
 }
  
 

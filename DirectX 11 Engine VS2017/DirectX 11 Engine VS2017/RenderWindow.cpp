@@ -40,6 +40,7 @@ bool RenderWindow::Initialize(HINSTANCE hInstance, std::string window_title, std
 	//Show Window
 	ShowWindow(this->handle, SW_SHOW);
 
+	return true;
 }
 bool RenderWindow::ProcessMessages()
 {

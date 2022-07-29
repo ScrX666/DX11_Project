@@ -7,10 +7,10 @@
 
 class VertexShader {
 public:
-	bool Initialize(Microsoft::WRL::ComPtr<ID3D11Device>& device, std::wstring shaderpath);
+	bool Initialize(ID3D11Device* in_device, const std::wstring& in_shaderFilepath);
 	ID3D11VertexShader* GetShader();
 	ID3D10Blob* GetBuffer();
-	//ID3D11InputLayout* GetInputLayout();
+
 private:
 	Microsoft::WRL::ComPtr< ID3D11VertexShader> shader;
 	Microsoft::WRL::ComPtr< ID3D10Blob> shader_buffer;
@@ -19,7 +19,7 @@ private:
 
 class PixelShader {
 public:
-	bool Initialize(Microsoft::WRL::ComPtr<ID3D11Device>& device, std::wstring shaderpath);
+	bool Initialize(ID3D11Device* in_device, const std::wstring& in_shaderFilepath);
 	ID3D11PixelShader* GetShader();
 	ID3D10Blob* GetBuffer();
 private:

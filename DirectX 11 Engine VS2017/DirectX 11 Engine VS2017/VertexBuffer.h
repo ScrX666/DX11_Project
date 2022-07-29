@@ -4,29 +4,29 @@
 #include<wrl/client.h>
 #include <memory>
 
-template<class T>
+template<class BufferStructType>
 class VertexBuffer
 {
 
 private:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> buffer;
-	UINT stride;
-	UINT bufferSize = 0;
+	UINT m_stride;
+	UINT m_bufferSize = 0;
 
 public:
 	VertexBuffer(){}
-	VertexBuffer(const VertexBuffer<T>& rhs)
+	VertexBuffer(const VertexBuffer<BufferStructType>& rhs)
 	{
 		this->buffer = rhs.buffer;
-		this->bufferSize = rhs.bufferSize;
-		this->stride = rhs.stride;
+		this->m_bufferSize = rhs.m_bufferSize;
+		this->m_stride = rhs.m_stride;
 	}
 
-	VertexBuffer<T>& operator=(const VertexBuffer<T>& a)
+	VertexBuffer<BufferStructType>& operator=(const VertexBuffer<BufferStructType>& a)
 	{
 		this->buffer = a.buffer;
-		this->bufferSize = a.bufferSize;
-		this->stride = a.stride;
+		this->m_bufferSize = a.m_bufferSize;
+		this->m_stride = a.m_stride;
 		return *this;
 	}
 
@@ -41,21 +41,21 @@ public:
 	}
 	UINT BufferSize() const
 	{
-		return this->bufferSize;
+		return this->m_bufferSize;
 	}
 	const UINT Stride() const
 	{
-		return this->stride;
+		return this->m_stride;
 	}
 
 	const UINT* StridePtr() const
 	{
-		return &this->stride;
+		return &this->m_stride;
 	}
-	HRESULT Initialize(ID3D11Device* device, T* data, UINT numVertices)
+	HRESULT Initialize(ID3D11Device* device, BufferStructType* data, UINT numVertices)
 	{
-		this->bufferSize = numVertices;
-		this->stride = (sizeof(T));
+		this->m_bufferSize = numVertices;
+		this->m_stride = (sizeof(BufferStructType));
 
 		D3D11_BUFFER_DESC vertexBufferDesc;
 		ZeroMemory(&vertexBufferDesc, sizeof(vertexBufferDesc));
@@ -75,9 +75,6 @@ public:
 
 
 	}
-
-
-
 };
 
 #endif

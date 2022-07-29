@@ -18,54 +18,31 @@ class Graphics
 {
 public :
 	bool Initialize(HWND hwnd, int width, int height);
+
 	void RenderFrame();
 	bool InitializeDirectX(HWND hwnd);
-	bool InitializeShader();
 	bool InitializeScene();
 
 	ID3D11Device* GetDirectXDevice() {	return m_device.Get(); }
 
-
-	Camera camera;
-	//static Graphics *_instance;
 	StaticMesh staMesh;
 	SkeletonMesh skeletonMesh;
-	//Model model;
+
 private:
 	
 
 	Microsoft::WRL::ComPtr<ID3D11Device> m_device;
-	Microsoft::WRL::ComPtr<ID3D11DeviceContext> deviceContext;
-	Microsoft::WRL::ComPtr < IDXGISwapChain> swapChain;
-	Microsoft::WRL::ComPtr < ID3D11RenderTargetView> renderTargetView;
-
-	
-	VertexShader vertexShader;
-	PixelShader pixelShader;
+	Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_deviceContext;
+	Microsoft::WRL::ComPtr < IDXGISwapChain> m_swapChain;
+	Microsoft::WRL::ComPtr < ID3D11RenderTargetView> m_renderTargetView;
 
 protected:
-	ConstantBuffer<ContantBuffer_VS> cb_vs_vertexshader;
-	VertexBuffer<Vertex> vertexbuffer;
-	IndexBuffer indexbuffer;
-	
 
-
-
-	Microsoft::WRL::ComPtr <ID3D11InputLayout> inputLayout;
-	Microsoft::WRL::ComPtr <ID3D11RasterizerState> rasterizerState;
-
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> depthStencilView;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_depthStencilView;
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> depthStencilBuffer;
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> depthStencilState;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_depthStencilState;
 
-	Microsoft::WRL::ComPtr<ID3D11SamplerState> samplerState;
-	Microsoft::WRL::ComPtr <ID3D11ShaderResourceView> myTexture;
-
-	std::unique_ptr<SpriteBatch> spriteBatch;
-	std::unique_ptr<SpriteFont> spriteFont;
 
 	int windowWidth = 0;
 	int windowHeight = 0;
-	//GameTimer fpsTimer;
-
 };

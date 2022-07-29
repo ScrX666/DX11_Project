@@ -10,13 +10,13 @@ public:
 	void Update();
 	void RenderFrame();
 
-public:
-	static Engine& Get();
-
+	Camera& GetCamera() { return m_camera; }
+	GameTimer& GetGameTimer() { return m_timer; }
 
 private:
-	GameTimer gtime;
-	Camera camera;
-	ConstantBuffer <ContantBuffer_VS> m_cBufferFrequently;
-	
+	GameTimer m_timer;
+	Camera m_camera;
+
+public:
+	static Engine& Get();
 };
