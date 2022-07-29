@@ -145,7 +145,7 @@ protected:
 	void LoadMeshBone(UINT in_meshIndex, const aiBone* in_aiBone);
 
 	const aiNodeAnim* TryFindNodeAnim(const aiAnimation* in_aiAnimation, PCSTR in_nodeName);
-	UINT FindPosition(FLOAT in_animationTimeTicks, const aiNodeAnim* in_aiNodeAnim);
+	UINT FindPositionKeyIndex(FLOAT in_animationTimeTicks, const aiNodeAnim* in_aiNodeAnim);
 	UINT FindRotationKeyIndex(FLOAT in_animationTimeTicks, const aiNodeAnim* in_aiNodeAnim);
 	UINT FindScalingKeyIndex(FLOAT in_animationTimeTicks, const aiNodeAnim* in_aiNodeAnim);
 	UINT GetBoneID(const aiBone* in_aiBone);

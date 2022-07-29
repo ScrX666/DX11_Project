@@ -281,7 +281,7 @@ const aiNodeAnim* SkeletonMesh::TryFindNodeAnim(const aiAnimation* in_aiAnimatio
 	return nullptr;
 }
 
-UINT SkeletonMesh::FindPosition(FLOAT in_animationTimeTicks, const aiNodeAnim* in_aiNodeAnim)
+UINT SkeletonMesh::FindPositionKeyIndex(FLOAT in_animationTimeTicks, const aiNodeAnim* in_aiNodeAnim)
 {
 	assert(in_aiNodeAnim->mNumPositionKeys > 0);
 
@@ -358,7 +358,7 @@ void SkeletonMesh::InterpolatePosition(XMFLOAT3& out_translation, FLOAT in_anima
 		return;
 	}
 
-	UINT positionKeyIndex = FindPosition(in_animationTimeTicks, in_aiNodeAnim);
+	UINT positionKeyIndex = FindPositionKeyIndex(in_animationTimeTicks, in_aiNodeAnim);
 	UINT nextPositionKeyIndex = positionKeyIndex + 1;
 	assert(nextPositionKeyIndex < in_aiNodeAnim->mNumPositionKeys);
 
